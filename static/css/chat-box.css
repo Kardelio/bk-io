@@ -1,0 +1,83 @@
+#entire-chat-container {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    margin: 1em;
+}
+
+#chat-div {
+    background: white;
+    overflow: hidden;
+    border: 1px solid black;
+    padding: 4px;
+    font-size: 90%;
+    flex-direction: column;
+    min-width: 15em;
+}
+
+.invert {
+    transform: rotate( 180deg);
+    text-align: right;
+}
+
+.chat-div-hidden {
+    height: 2px !important;
+    overflow: hidden;
+}
+
+.chat-messages-hidden {
+    height: 0em !important;
+}
+
+#chat-toggle {
+    font-size: 120%;
+    margin-bottom: 0.2em;
+    transition: transform 0.5s;
+}
+
+#chat-messages {
+    overflow: scroll;
+    width: 20em;
+    height: 15em;
+    transition: height 0.5s;
+}
+
+#chat-input-div {
+    display: flex;
+    width: 100%;
+}
+
+#message-text {
+    flex: 1;
+    margin-right: 0.3em;
+}
+
+#message-send {}
+
+.single-message {
+    border-bottom: 1px solid #c6c6c6;
+    padding: 3px 0px;
+}
+
+.message-from-game {
+    background-color: rgba(13, 138, 255, 0.4);
+}
+
+.message-sender {
+    display: inline-block;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.message-message {
+    display: inline-block;
+    font-style: italic;
+}
+
+.message-time {
+    display: inline-block;
+    /* float: right; */
+    font-size: 80%;
+    margin-right: 0.3em;
+    font-style: italic;
+}

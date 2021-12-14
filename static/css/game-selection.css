@@ -1,0 +1,71 @@
+#game-selection-div {
+    position: absolute;
+    display: none;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    flex-direction: column;
+}
+
+#participate-game-div {
+    position: absolute;
+    display: none;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    flex-direction: column;
+}
+
+#participate-game-which-game {
+    text-align: center;
+}
+
+#start-game-dialog-text {
+    text-align: center;
+}
+
+#start-game-dialog-div {
+    position: absolute;
+    display: none;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    flex-direction: column;
+}
+
+.game-option {
+    margin: 1em;
+    font-size: 120%;
+    background: #c7c7ff;
+    padding: 0.5em;
+    border-radius: 5px;
+}
+
+.single-game-title {
+    font-weight: bold;
+    margin-bottom: 0.3em;
+}
+
+.single-game-description {
+    font-size: 80%;
+    font-style: italic;
+    margin-bottom: 0.3em;
+}
+
+.single-game-min-max-players {
+    font-size: 70%;
+    font-weight: bold;
+}
+
+#current-game-div {
+    display: flex;
+    position: absolute;
+    font-size: 140%;
+    top: 0;
+}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/chat-box.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/who-is-here.css">
+    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/game-selection.css">
+    <link rel="stylesheet" href="css/fontawesome-all.css">
+    <script src="js/utils.js"></script>
+    <script src="js/chat-messages.js"></script>
+    <script src="js/popup-messages.js"></script>
+    <script src="js/local-storage.js"></script>
+    <script src="js/user-details.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/players.js"></script>
+    <script src="js/version.js"></script>
+    <script src="js/aabits.js"></script>
+    <script src="js/game-loader.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/socket-events.js"></script>
+
+</head>
+
+<body>
+    <div class="container">
+        <div id="name-selection-div" class="whole-space whole-screen">
+            <div class="room-option-block">
+                <div class="title">Please enter your name...</div>
+                <input type="text" id="name" class="text-input space-above" />
+                <button id="enter-name-button" class="button space-above">Confirm</button>
+            </div>
+        </div>
+
+        <!-- Join or Create a room -->
+        <div id="room-selection-div" class="whole-space whole-screen">
+            <div class="room-option-block">
+                <div class="title">Create a NEW room</div>
+                <button id="create-room-button" class="button space-above">Create</button>
+            </div>
+            <div class="or-block">
+                Or
+            </div>
+            <div class="room-option-block">
+                <div class="title">Join an EXISTING room</div>
+                <input type="text" id="roomcode" class="text-input space-above" />
+                <div class="warning" id="no-room-warning">No room with that code!</div>
+                <button id="join-room-button" class="button space-above">Click</button>
+            </div>
+        </div>
+
+        <div id="game-selection-div">
+            <div id="game-selection-div-inner" class="room-option-block">
+            </div>
+        </div>
+
+        <div id="settings-change-div">
+            <div id="settings-change-div-inner" class="room-option-block">
+                <div class="title">Please enter your name...</div>
+                <input type="text" id="settings-name" class="text-input space-above" />
+                <div class="simple-row-container space-above">
+                    <button id="settings-confirm-button" class="clickable-option positive">Confirm</button>
+                    <button id="settings-cancel-button" class="clickable-option negative">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="participate-game-div">
+            <div class="room-option-block">
+                <div id="participate-game-which-game">---</div>
+                <div id="participate-game-positive" class="game-option positive">Join In!</div>
+                <div id="participate-game-negative" class="game-option negative">Sit Out!</div>
+            </div>
+        </div>
+
+        <div id="start-game-dialog-div">
+            <div class="room-option-block">
+                <div id="start-game-dialog-text">-</div>
+                <div id="start-game-dialog-button-positive" class="game-option positive centered">Start!</div>
+                <div id="start-game-dialog-game-settings-area"></div>
+            </div>
+        </div>
+
+        <div id="current-game-div" class="whole-screen whole-width">
+        </div>
+
+        <div id="game-div" class="whole-space whole-screen">
+            -----
+        </div>
+
+        <div id="notification-div">
+        </div>
+
+
+
+        <div id="top-right-div">
+            <div id="options-div-all">
+                <i id="settings-icon" class="fa fa-cog grey-front" onclick="toggleUserSettingsMenu()" aria-hidden="true"></i>
+            </div>
+            <div id="options-div-admin">
+                <i id="game-selection-icon" class="fa fa-gamepad info-front" onclick="displayGameSelectionMenu()" aria-hidden="true"></i>
+                <i id="game-cancel-icon" class="fa fa-times-circle negative-front" onclick="cancelCurrentGame()" aria-hidden="true"></i>
+            </div>
+            <div id="game-id">
+            </div>
+        </div>
+        <div id="entire-chat-container">
+            <i id="chat-toggle" class="fa fa-chevron-circle-down" aria-hidden="true"></i>
+            <div id="chat-div">
+                <div id="chat-messages"></div>
+                <form action="javascript:void(0);" id="chat-input-div">
+                    <input type="text" name="message" id="message-text">
+                    <button id="message-send">Send</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="aabits-div">
+        </div>
+        <div id="version-div">
+        </div>
+        <div id="who-is-here"></div>
+
+</body>
+
+</html>

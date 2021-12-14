@@ -1,0 +1,25 @@
+.fade-out {
+    animation: disappear 0.5s linear forwards;
+}
+
+.fade-in {
+    animation: appear 0.5s linear forwards;
+}
+
+@keyframes disappear {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}

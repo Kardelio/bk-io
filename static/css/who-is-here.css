@@ -1,0 +1,27 @@
+#who-is-here {
+    display: flex;
+    position: absolute;
+    top: 0;
+    flex-direction: column;
+    left: 0;
+    margin-bottom: 0em;
+}
+
+.one-here {
+    margin: 0.3em 0;
+    font-size: 120%;
+    background: white;
+    border-bottom-right-radius: 3px;
+    border-top-right-radius: 3px;
+    padding: 0.3em 0.8em;
+}
+
+.simple-dot {
+    width: 0.4em;
+    height: 0.4em;
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
+    position: absolute;
+    right: 0.2em;
+}

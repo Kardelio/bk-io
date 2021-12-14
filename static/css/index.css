@@ -1,0 +1,300 @@
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+    background-color: #dadada;
+    font-family: roboto;
+    position: relative;
+    margin: 0;
+}
+
+.container {
+    margin: 8px;
+    height: 100%;
+    width: 100%;
+}
+
+.whole-space {
+    height: 100%;
+    width: 100%;
+}
+
+.whole-width {
+    width: 100%;
+}
+
+.whole-screen {
+    align-content: center;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#name-selection-div {
+    display: none;
+}
+
+#room-selection-div {
+    display: none;
+}
+
+#game-div {
+    display: none;
+}
+
+.clickable-option {
+    font-size: 120%;
+    background: #c7c7ff;
+    padding: 0.5em;
+    border-radius: 5px;
+}
+
+.popup-card {
+    padding: 1.5em;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 2px 2px 6px 0px;
+}
+
+.popup-item {
+    color: white;
+    padding: 0.5em;
+    margin: 0.5em;
+    border-radius: 5px;
+}
+
+#user-details-div {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-left: 0.3em;
+    margin-top: 0.3em;
+}
+
+#user-id {
+    font-size: 85%;
+    font-style: italic;
+}
+
+#user-name {
+    font-size: 85%;
+    font-style: italic;
+}
+
+#notification-div {
+    top: 0;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    text-align: center;
+}
+
+#top-right-div {
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#game-id {
+    padding: 0.3em;
+    font-size: 150%;
+    border-bottom-left-radius: 5px;
+    background: white;
+}
+
+#game-selection-icon {}
+
+#game-details-div {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.3em;
+    font-size: 150%;
+    border-bottom-left-radius: 5px;
+    background: white;
+}
+
+#options-div-all {
+    font-size: 200%;
+    margin-right: 0.5em;
+    padding-top: 0.1em;
+    display: flex;
+    gap: 0.5em;
+}
+
+#options-div-admin {
+    font-size: 200%;
+    margin-right: 0.3em;
+    padding-top: 0.1em;
+    display: none;
+    gap: 0.5em;
+}
+
+.centered {
+    text-align: center;
+}
+
+.positive {
+    background: #2ab52a !important;
+    color: white;
+}
+
+.negative {
+    background: #b52a2a !important;
+    color: white;
+}
+
+.negative-front {
+    color: #b52a2a !important;
+}
+
+.close-icon {
+    font-size: 120%;
+    float: right;
+}
+
+.info {
+    background: #3f7cec !important;
+}
+
+.info-front {
+    color: #3f7cec !important;
+}
+
+.grey-front {
+    color: #9a9a9a !important;
+}
+
+.grey {
+    background-color: #9a9a9a;
+}
+
+.inGame {
+    background-color: #40cb7e !important;
+}
+
+#aabits-div {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin: 1em;
+    background: white;
+    border: 1px solid black;
+    padding: 4px;
+    font-size: 90%;
+    flex-direction: column;
+}
+
+#version-div {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    margin: 0em;
+    padding-left: 8px;
+    font-size: 65%;
+    color: #9f9f9f;
+    flex-direction: column;
+}
+
+.single-bits-row {
+    padding: 1px 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.row-even {}
+
+.row-odd {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.single-bits-row-name {
+    font-weight: bold;
+}
+
+.single-bits-row-amount {
+    padding-left: 10px;
+    font-style: italic;
+}
+
+.warning {
+    color: red;
+}
+
+#no-room-warning {
+    display: none;
+}
+
+.space-above {
+    margin-top: 0.5em;
+}
+
+.title {
+    font-size: 120%;
+}
+
+.simple-row-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.standard-gap {
+    gap: 0.5em;
+}
+
+.button {
+    font-size: 120%;
+    background: #5050cb;
+    color: white;
+    border: 2px solid #6d6ddd;
+    border-radius: 4px;
+}
+
+.text-input {
+    font-size: 120%;
+}
+
+.room-option-block {
+    margin: 1em;
+    background: white;
+    padding: 1em;
+    max-width: 75%;
+    border-radius: 5px;
+    box-shadow: black 1px 1px 4px 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+.or-block {
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.game-data-block {
+    margin: 0.5em;
+    background-color: #e0e0e0;
+    padding: 0.5em;
+    border-radius: 3px;
+    max-width: 15em;
+    text-align: center;
+}
+
+.game-data-name {
+    font-weight: bold;
+}
+
+.game-data-description {
+    font-style: italic;
+    font-size: 80%;
+}
+
+.game-data-value {}
+
+.game-data-value-input {
+    font-size: 120%;
+    margin-top: 0.3em;
+    width: 90%;
+}

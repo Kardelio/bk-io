@@ -1,0 +1,28 @@
+.MY_TAG-buttons-div {
+    padding: 8px;
+    background-color: aqua;
+}
+
+.rps-score-line {
+    margin: 0.3em 0;
+    font-size: 90%;
+    font-style: italic;
+}
+
+.rps-score-container {
+    margin: 0.5em;
+    background-color: #b5b5b5;
+    padding: 0.5em;
+}
+
+.rps-log-line {
+    margin: 0.3em 0;
+    font-size: 90%;
+    font-style: italic;
+}
+
+.rps-log-container {
+    margin: 0.5em;
+    background-color: #b5b5b5;
+    padding: 0.5em;
+}

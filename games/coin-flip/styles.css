@@ -1,0 +1,12 @@
+.coin-flip-buttons-div {
+    padding: 8px;
+    background-color: aqua;
+}
+
+#coin-flip-heads {
+    display: none;
+}
+
+#coin-flip-tails {
+    display: none;
+}

@@ -1,0 +1,39 @@
+[{
+    "id": 0,
+    "tag": "coin-flip",
+    "title": "Coin Flip",
+    "folder": "coin-flip",
+    "description": "Be the first to guess 5 times correctly the result of a coin flip against your opponent",
+    "min_players": 1,
+    "max_players": 2,
+    "game_data": {
+        "score": {
+            "name": "Score to win...",
+            "value": 3,
+            "type": "int",
+            "description": "Amount of score required to win"
+        },
+        "other": {
+            "name": "Something else",
+            "value": "words",
+            "type": "string",
+            "description": "here are some great words that I just rhgouht of"
+        }
+    }
+}, {
+    "id": 1,
+    "tag": "rps",
+    "title": "Rock, Paper, Scissors",
+    "folder": "rock-paper-scissors",
+    "description": "Rock, Paper, Scissors yo!",
+    "min_players": 2,
+    "max_players": 2,
+    "game_data": {
+        "best_of": {
+            "name": "Best Of...",
+            "value": 3,
+            "type": "int",
+            "description": "Best of score to win"
+        }
+    }
+}]

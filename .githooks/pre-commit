@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+echo -e "\033[35mRunning PRE-COMMIT hook\033[0m"
+number=$(git rev-list --count HEAD)
+commitHash=$(git rev-parse --short HEAD)
+
+sed -i '' "s/hash\":\ .*$/hash\":\ \"${commitHash}\"/g" version.json
+sed -i '' "s/number\":\ .*$/number\":\ \"${number}\",/g" version.json
+
+git add version.json
+
