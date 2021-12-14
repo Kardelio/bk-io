@@ -93,6 +93,14 @@ function addPlayerToRoom(playerId, roomCode) {
     console.log(`****> Players in room ${roomCode}: ${JSON.stringify(roomToPlayerIdMap)}`);
 }
 
+// function removePlayerFromRoom(playerId, roomCode) {
+//     const index = roomToPlayerIdMap[roomCode].indexOf(playerId);
+//     if (index > -1) {
+//         roomToPlayerIdMap[roomCode].splice(index, 1);
+//     }
+//     console.log(`****> Players in room ${roomCode}: ${JSON.stringify(roomToPlayerIdMap)}`);
+// }
+
 function getPlayerUsingId(id) {
     return { "id": id, "name": idToPlayerNameMap[id] }
 }
@@ -174,6 +182,13 @@ io.on('connection', (socket) => {
         } else {
             console.log(`===> ${socket.id} (${roomCode}) Tried to start a game that does NOT exist: ${gameId}`);
         }
+    })
+
+    socket.on('leave-room', (roomCode) => {
+        console.log(`===> ${socket.id} Leaving the ROOM (${roomCode})`);
+        socket.leave(roomCode);
+        removePlayerFromRoom(socket.id);
+        sendPlayerUpdate(roomCode);
     })
 
     socket.on('cancel-game', (roomCode, socketId) => {

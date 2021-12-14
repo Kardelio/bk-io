@@ -66,6 +66,15 @@ document.addEventListener("DOMContentLoaded", event => {
     askForVersionInfo();
 });
 
+function leaveRoomUI() {
+    showScreen(ROOM);
+    toggleGameSelectionIconDisplay(false);
+    clearPlayersInRoomList();
+    setGameId("");
+    toggleChatWindow(isCurrentlyInRoom());
+    toggleLeaveRoomButton();
+}
+
 function getGameSpace() {
     return document.getElementById("game-div");
 }
@@ -217,7 +226,11 @@ function setUserDetails(id, name) {
 
 function setGameId(id) {
     currentRoomCode = id;
-    document.getElementById("game-id").innerHTML = `${id}`;
+    if (currentRoomCode != "") {
+        document.getElementById("game-id").innerHTML = `${currentRoomCode}`;
+    } else {
+        document.getElementById("game-id").innerHTML = ``;
+    }
 }
 
 function toggleChatWindow(isInRoom) {
@@ -225,6 +238,14 @@ function toggleChatWindow(isInRoom) {
         document.getElementById("entire-chat-container").style.display = "block";
     } else {
         document.getElementById("entire-chat-container").style.display = "none";
+    }
+}
+
+function toggleLeaveRoomButton() {
+    if (document.getElementById("leave-room-icon").style.display == "none" || document.getElementById("leave-room-icon").style.display == '') {
+        document.getElementById("leave-room-icon").style.display = "block";
+    } else {
+        document.getElementById("leave-room-icon").style.display = "none";
     }
 }
 
@@ -272,4 +293,9 @@ function requestJoinRoom(roomcode) {
 
 function cancelCurrentGame() {
     socket.emit("cancel-game", currentRoomCode, currentSocketId);
+}
+
+function leaveRoom() {
+    socket.emit("leave-room", currentRoomCode);
+    leaveRoomUI();
 }

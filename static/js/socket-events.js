@@ -21,11 +21,13 @@ socket.on("gameCode", (code, playersMap) => {
     setGameId(code);
     toggleChatWindow(isCurrentlyInRoom());
     isPlayerGameStarter = true;
+    toggleLeaveRoomButton();
 });
 socket.on("joined", (code, playersMap) => {
     showScreen(GAME);
     setGameId(code);
     toggleChatWindow(isCurrentlyInRoom());
+    toggleLeaveRoomButton();
 });
 socket.on("noroom", () => {
     displayNoRoomWarning();

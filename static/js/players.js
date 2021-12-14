@@ -28,6 +28,10 @@ function playerLeftEvent(name) {
     displayPopupMessage(`${name} has left`, "negative");
 }
 
+function clearPlayersInRoomList() {
+    document.getElementById("who-is-here").innerHTML = "";
+}
+
 function displayKnownPlayerList(listIn) {
     let out = "";
     listIn.forEach(element => {
