@@ -1,3 +1,13 @@
+## Install dependencies
+
+First you need to install the npm modules that are dependencies for this project to run (like `express` etc...)
+
+Use this command:
+
+```
+npm install
+```
+
 ## How to contribute
 
 In a terminal in the root directory of this project run this command:
