@@ -3,25 +3,25 @@
     background-color: aqua;
 }
 
-.rps-score-line {
+.MY_TAG-score-line {
     margin: 0.3em 0;
     font-size: 90%;
     font-style: italic;
 }
 
-.rps-score-container {
+.MY_TAG-score-container {
     margin: 0.5em;
     background-color: #b5b5b5;
     padding: 0.5em;
 }
 
-.rps-log-line {
+.MY_TAG-log-line {
     margin: 0.3em 0;
     font-size: 90%;
     font-style: italic;
 }
 
-.rps-log-container {
+.MY_TAG-log-container {
     margin: 0.5em;
     background-color: #b5b5b5;
     padding: 0.5em;
