@@ -5,7 +5,9 @@ module.exports = {
     makeid: makeid,
     shell: shell,
     readJsonFile: readJsonFile,
-    writeJsonFile: writeJsonFile
+    writeJsonFile: writeJsonFile,
+    getRandomNumberInclusive: getRandomNumberInclusive,
+    shuffleArray: shuffleArray
 }
 
 function makeid(length) {
@@ -45,4 +47,18 @@ function shell(cmd) {
             }
         });
     });
+}
+
+function getRandomNumberInclusive(from, to) {
+    return Math.floor(Math.random() * to) + from;
+}
+
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
 }

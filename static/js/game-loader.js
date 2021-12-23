@@ -20,8 +20,13 @@ function returnSingleGameDiv(gameObj) {
     return `
         <div id="game-option-${gameObj.id}" onclick="selectGame('${gameObj.id}')" class="game-option">
             <div class="single-game-title">${gameObj.title}</div>
-            <div class="single-game-description">${gameObj.description}</div>
-            <div class="single-game-min-max-players">Min: ${gameObj.min_players} - Max: ${gameObj.max_players}</div>
+            <div class="single-game-description">
+                <img src="${gameObj.folder}/logo.png" class="single-game-img"/>
+                <div>
+                    <div class="single-game-description">${gameObj.description}</div>
+                    <div class="single-game-min-max-players">Min: ${gameObj.min_players} - Max: ${gameObj.max_players}</div>
+                </div>
+            </div>
         </div>
     `;
 }
