@@ -24,7 +24,7 @@
     "id": 1,
     "tag": "rps",
     "title": "Rock, Paper, Scissors",
-    "folder": "rock-paper-scissors",
+    "folder": "rps",
     "description": "Rock, Paper, Scissors yo!",
     "min_players": 2,
     "max_players": 2,
@@ -34,6 +34,22 @@
             "value": 3,
             "type": "int",
             "description": "Best of score to win"
+        }
+    }
+}, {
+    "id": 2,
+    "tag": "my-mine",
+    "title": "My Gold Mine",
+    "folder": "my-mine",
+    "description": "Mine as much as you can & escape the mine before the dragon gets you... Push. Your. Luck!",
+    "min_players": 1,
+    "max_players": 2,
+    "game_data": {
+        "rounds": {
+            "name": "Number of rounds...",
+            "value": 3,
+            "type": "int",
+            "description": "Number of rounds to play"
         }
     }
 }]

@@ -53,6 +53,15 @@
 }
 
 .single-game-description {
+    display: flex;
+    gap: 0.5em;
+}
+
+.single-game-img {
+    width: 50px;
+}
+
+.single-game-description {
     font-size: 80%;
     font-style: italic;
     margin-bottom: 0.3em;
