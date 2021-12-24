@@ -26,6 +26,10 @@ let currentAvailableGames = [];
 let gameServerJs = {};
 let activeGames = {};
 
+let aabitsCache = null;
+let aabitsInterval = null;
+const aabitsIntervalCount = 5000;
+
 function loadGames() {
     let rawData = fs.readFileSync(process.env.GAMES_FILE, 'utf8');
     currentAvailableGames = JSON.parse(rawData);
@@ -42,6 +46,27 @@ function loadGames() {
     }
 }
 loadGames();
+
+function getAABitsOnLoop() {
+    aabitsInterval = setInterval(() => {
+        getAABitsFromServer();
+    }, aabitsIntervalCount);
+}
+
+function getAABitsFromServer() {
+    getAABitsRequest()
+        .then((d) => {
+            aabitsCache = d;
+        })
+        .catch(err => {
+            console.log(`AABits request ERROR : ${err}`);
+        });
+}
+
+console.log(process.env.SHOULD_GET_AABITS);
+if (process.env.SHOULD_GET_AABITS == "true") {
+    getAABitsOnLoop();
+}
 
 function copyObject(objectOriginal) {
     return JSON.parse(JSON.stringify(objectOriginal));
@@ -265,7 +290,9 @@ io.on('connection', (socket) => {
 });
 
 app.get("/aabits", (req, res) => {
-    getAABits(res);
+    // getAABits(res);
+    res.write(JSON.stringify(aabitsCache));
+    res.end();
 })
 
 app.get("/version", (req, res) => {
@@ -298,17 +325,17 @@ function endCurrentGame(roomCode) {
     delete activeGames[roomCode];
 }
 
-function getAABits(res) {
-    getAABitsRequest()
-        .then((d) => {
-            res.write(JSON.stringify(d));
-            res.end();
-        })
-        .catch(err => {
-            res.write(JSON.stringify(err));
-            res.end();
-        });
-}
+// function getAABits(res) {
+//     getAABitsRequest()
+//         .then((d) => {
+//             res.write(JSON.stringify(d));
+//             res.end();
+//         })
+//         .catch(err => {
+//             res.write(JSON.stringify(err));
+//             res.end();
+//         });
+// }
 
 function getAABitsRequest() {
     return new Promise((res, rej) => {

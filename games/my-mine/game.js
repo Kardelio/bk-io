@@ -6,10 +6,12 @@ class GameMap {
         this.safe = Array();
         this.dead = Array();
         this.dragonIndex = this.numberOfPlaces;
+        this.playerList = players;
         players.forEach(player => {
             this.addPlayerToGame(player);
         });
         this.printGameStatus();
+        // this.moveAllPlayers(-2);
     }
 
     printGameStatus() {
@@ -33,6 +35,34 @@ class GameMap {
         playersInThatCell.forEach(player => {
             this.killPlayer(player, this.dragonIndex);
         });
+        this.printGameStatus();
+    }
+
+    moveAllPlayers(amount) {
+        this.playerList.forEach(playerId => {
+            this.movePlayerByAmount(playerId, amount);
+        });
+    }
+
+    findCellOfPlayer(playerId) {
+        let currentCellId = null;
+        for (let index = 0; index < this.map.length; index++) {
+            const element = this.map[index];
+            if (element.indexOf(playerId) > -1) {
+                currentCellId = index;
+                break;
+            }
+        }
+        return currentCellId;
+    }
+
+    switchTwoPlayersPositions(playerA, playerB) {
+        let playerACell = this.findCellOfPlayer(playerA)
+        let playerBCell = this.findCellOfPlayer(playerB)
+        this.removePlayerFromCell(playerA, playerACell)
+        this.removePlayerFromCell(playerB, playerBCell)
+        this.putPlayerInCell(playerA, playerBCell)
+        this.putPlayerInCell(playerB, playerACell)
         this.printGameStatus();
     }
 
@@ -75,6 +105,12 @@ class GameMap {
         // this.movePlayerByAmount(playerId, caveCard.movementAmount)
     }
 
+    triggerExitCard(playerId, exitCard, option) {
+        console.log(exitCard.name);
+        console.log(option);
+        exitCard.activateOption(option, playerId);
+    }
+
     collectGems(playerId, amount) {
         if (this.gems[playerId] == undefined) {
             this.gems[playerId] = amount;
@@ -86,16 +122,16 @@ class GameMap {
 
     movePlayerByAmount(playerId, amount) {
         this.printGameStatus();
-        let currentCellId = null;
-        let whereInCell = null;
-        for (let index = 0; index < this.map.length; index++) {
-            const element = this.map[index];
-            if (element.indexOf(playerId) > -1) {
-                whereInCell = element.indexOf(playerId);
-                currentCellId = index;
-                break;
-            }
-        }
+        let currentCellId = this.findCellOfPlayer(playerId);
+        // let whereInCell = null;
+        // for (let index = 0; index < this.map.length; index++) {
+        //     const element = this.map[index];
+        //     if (element.indexOf(playerId) > -1) {
+        //         // whereInCell = element.indexOf(playerId);
+        //         currentCellId = index;
+        //         break;
+        //     }
+        // }
         if (currentCellId != null) {
             if (amount != 0) {
                 this.removePlayerFromCell(playerId, currentCellId)

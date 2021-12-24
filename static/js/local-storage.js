@@ -1,4 +1,5 @@
 const CURRENT_STORED_USERNAME = "username";
+const EXPANDED_CHAT = "expanded-chat";
 
 function getFromLocalStorage(key) {
     if (localStorage.getItem(key) != undefined) {

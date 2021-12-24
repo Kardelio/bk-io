@@ -47,6 +47,11 @@ export function takeTop() {
     socket.emit(`${GAME_TAG}-take-top-cave-card`, currentSocketId, currentRoomCode);
 }
 
+export function takeExit() {
+    console.log("Taking exit");
+    socket.emit(`${GAME_TAG}-take-top-exit-card`, currentSocketId, currentRoomCode);
+}
+
 export function exampleFunctionToBeUsedByDOM(which) {
     yourCurrentSelection = which;
     /**
@@ -67,6 +72,43 @@ export function exampleFunctionToBeUsedByDOM(which) {
  * and interact with...
  */
 function renderGameState(state) {
+    // getGameSpace().innerHTML = `
+    //     <div id='${GAME_TAG}-heads'><img src="${GAME_TAG}/media/coin-heads.png" style="width: 100px; height: 100px;"></div>
+    //     <div id='${GAME_TAG}-tails'><img src="${GAME_TAG}/media/coin-tails.png" style="width: 100px; height: 100px;"></div>
+    //     <div id='${GAME_TAG}-coin-buttons' class='${GAME_TAG}-buttons-div'></div>
+    //     <div id='${GAME_TAG}-score'></div>
+    // `;
+
+    // if (state.players[state.currentPlayerIndex] == currentSocketId) {
+    //     document.getElementById(`${GAME_TAG}-coin-buttons`).innerHTML = `
+    //     <button onclick='mapOfGames["${GAME_TAG}"].flipit("heads")'>heads</button>
+    //     <button onclick='mapOfGames["${GAME_TAG}"].flipit("tails")'>tails</button>
+    // `;
+    // } else {
+    //     document.getElementById(`${GAME_TAG}-coin-buttons`).innerHTML = ``;
+    // }
+
+    // let scoreOut = "";
+    // for (const [key, value] of Object.entries(state.score)) {
+    //     console.log(`${key}: ${value}`);
+    //     scoreOut += `
+    //         <div>${getPlayerInfomation(key).name} -> ${value}</div>
+    //     `;
+    // }
+    // document.getElementById(`${GAME_TAG}-score`).innerHTML = scoreOut;
+
+    // if (state.coinResult == "heads") {
+    //     document.getElementById(`${GAME_TAG}-heads`).style.display = "block";
+    //     document.getElementById(`${GAME_TAG}-tails`).style.display = "none";
+    // } else if (state.coinResult == "tails") {
+    //     document.getElementById(`${GAME_TAG}-heads`).style.display = "none";
+    //     document.getElementById(`${GAME_TAG}-tails`).style.display = "block";
+    // } else {
+    //     document.getElementById(`${GAME_TAG}-heads`).style.display = "none";
+    //     document.getElementById(`${GAME_TAG}-tails`).style.display = "none";
+    // }
+
+    // document.getElementById(`${GAME_TAG}-coin`).innerHTML = JSON.stringify(state);
     /**
      * Render and draw the current game state.
      * IMPORTANT: the state object should dictate what
@@ -79,13 +121,61 @@ function renderGameState(state) {
     //     </div>
     //     ${displayScore(state)}
     // `;
+    let display = "";
+
+    display += renderGameMap(state);
+    display += renderCaveDeckTopCard(state);
     if (state.players[state.currentPlayerIndex] == currentSocketId) {
-        getGameSpace().innerHTML = `
+        display += `
         <button onclick='mapOfGames["${GAME_TAG}"].takeTop()'>top</button>
+        <button onclick='mapOfGames["${GAME_TAG}"].takeExit()'>exit</button>
     `;
     } else {
-        document.getElementById(`${GAME_TAG}-coin-buttons`).innerHTML = ``;
+        display += `nah`;
     }
+    display += displayLog(state);
+    getGameSpace().innerHTML = display;
+}
+
+function displayLog(state) {
+    let out = `<div class="${GAME_TAG}-log-container">`;
+    state.log.forEach(element => {
+        out += `
+        <div class="${GAME_TAG}-log-line">
+            ${element}
+        </div>
+        `;
+    });
+    out += `</div>`;
+    return out;
+}
+
+function renderGameMap(state) {
+    let m = state.game.map;
+    let out = "<div>";
+    for (let index = 0; index < m.length; index++) {
+        out += `[ `;
+        const cell = m[index];
+        if (cell.length > 0) {
+            cell.forEach(id => {
+                out += ` ${getPlayerInfomation(id).name} `;
+            });
+        }
+        if (index == state.game.dragonIndex) {
+            out += ` -D- `;
+        }
+        out += ` ]`;
+    }
+    out += "</div>";
+    return out;
+}
+
+function renderCaveDeckTopCard(state) {
+    let out = "";
+    out += `
+        <div>${state.topCaveCard.name}</div>
+    `
+    return out;
 }
 
 /**
