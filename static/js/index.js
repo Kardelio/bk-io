@@ -64,6 +64,9 @@ document.addEventListener("DOMContentLoaded", event => {
     requestGames();
     continueToAskForBits();
     askForVersionInfo();
+
+    let chatExpanded = getFromLocalStorage(EXPANDED_CHAT)
+    setChatExpanded(chatExpanded);
 });
 
 function leaveRoomUI() {
@@ -251,6 +254,18 @@ function toggleLeaveRoomButton() {
 
 function toggleChatWindowMinimize() {
     if (document.getElementById("chat-messages").classList.contains("chat-messages-hidden")) {
+        setInLocalStorage(EXPANDED_CHAT, "true");
+        document.getElementById("chat-toggle").classList.remove("invert");
+        document.getElementById("chat-messages").classList.remove("chat-messages-hidden");
+    } else {
+        setInLocalStorage(EXPANDED_CHAT, "false");
+        document.getElementById("chat-toggle").classList.add("invert");
+        document.getElementById("chat-messages").classList.add("chat-messages-hidden");
+    }
+}
+
+function setChatExpanded(expanded) {
+    if (expanded == "true") {
         document.getElementById("chat-toggle").classList.remove("invert");
         document.getElementById("chat-messages").classList.remove("chat-messages-hidden");
     } else {

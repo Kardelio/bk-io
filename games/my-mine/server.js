@@ -1,8 +1,12 @@
 // IMPORTANT: fill in the below with the same string as your tag in the games.json
 const GAME_TAG = "my-mine";
 console.log(`GAME-SERVER: ${GAME_TAG} -> Loaded`);
+
 const Game = require('./game.js');
 const Card = require('./card.js');
+const CardTags = require('./cardTags.js');
+const ExitDeckGen = require('./exitCardDeckGenerator.js');
+const CaveDeckGen = require('./caveCardDeckGenerator.js');
 const Utils = require('../../server/js/utils.js');
 /**
  * GAME_TAG - IMPORTANT your unique game tag, use everywhere...
@@ -45,141 +49,111 @@ const Utils = require('../../server/js/utils.js');
 // let caveCardsDeck = [];
 // let discard = [];
 
+let getPlayerInfoFromIdFunc = null;
 let allGameStateHolder = {};
-
-const DRAGON_CARD_TAG = "dragon";
-
-const twoGemsOneDangerNumber = 7;
-const oneGemNumber = 7;
-const oneGemOneSafeNumber = 7;
-const dragonCardNumber = 3;
-const totalCaveCards = dragonCardNumber + twoGemsOneDangerNumber + oneGemNumber + oneGemOneSafeNumber;
 
 function createNewGamesInstance(roomCode, players) {
     allGameStateHolder[roomCode]["private"]["gameMap"] = new Game.GameMap(7, players);
-    allGameStateHolder[roomCode]["private"]["caveCards"] = generateFreshCaveDeck(roomCode);
-    allGameStateHolder[roomCode]["private"]["caveCardsDiscard"] = Array();
-    allGameStateHolder[roomCode]["private"]["exitCards"] = generateFreshExitDeck(roomCode);
-    allGameStateHolder[roomCode]["private"]["exitCardsDiscard"] = Array();
+    restockCaveCardsDeck(roomCode);
+    restockExitCardsDeck(roomCode);
     checkTopCard(roomCode, null);
+
+    //DELETE ME BELOW
+    // playerPullsExitCard(roomCode, null);
+    // playerPullsExitCard(roomCode, null);
+    // playerPullsExitCard(roomCode, null);
+    // playerPullsExitCard(roomCode, null);
+    // console.log(allGameStateHolder[roomCode]["private"]["gameMap"].findCellOfPlayer("a"));
+    // allGameStateHolder[roomCode]["private"]["gameMap"].movePlayerByAmount("a", 2);
+    // console.log(allGameStateHolder[roomCode]["private"]["gameMap"].findCellOfPlayer("a"));
+    // allGameStateHolder[roomCode]["private"]["gameMap"].movePlayerByAmount("a", 2);
+    // allGameStateHolder[roomCode]["private"]["gameMap"].switchTwoPlayersPositions("a", "b");
+    // allGameStateHolder[roomCode]["private"]["gameMap"].switchTwoPlayersPositions("a", "b");
+
+}
+allGameStateHolder["ABCD"] = {
+    "public": {},
+    "private": {}
+}
+createNewGamesInstance("ABCD", ["a", "b", "c"]);
+
+function addItemToLog(roomCode, message) {
+    allGameStateHolder[roomCode].public["log"].push(message);
+}
+
+function restockCaveCardsDeck(roomCode) {
+    allGameStateHolder[roomCode]["private"]["caveCards"] = generateFreshCaveDeck(roomCode);
+    // allGameStateHolder[roomCode]["private"]["caveCardsDiscard"] = Array();
+}
+
+function restockExitCardsDeck(roomCode) {
+    allGameStateHolder[roomCode]["private"]["exitCards"] = generateFreshExitDeck(roomCode);
+    // allGameStateHolder[roomCode]["private"]["exitCardsDiscard"] = Array();
 }
 
 function playerPullsCaveCard(roomCode, playerId) {
     let topCard = allGameStateHolder[roomCode]["private"]["caveCards"].shift();
+    console.log(topCard);
     allGameStateHolder[roomCode]["private"]["gameMap"].movePlayerWithCaveCard(playerId, topCard)
+    addItemToLog(roomCode, `${getPlayerInfoFromIdFunc(playerId).name} picked up the card: ${topCard.name}`);
     checkTopCard(roomCode, playerId);
 }
 
 function playerPullsExitCard(roomCode, playerId) {
+    if (allGameStateHolder[roomCode]["private"]["exitCards"].length > 0) {
+        let topCard = allGameStateHolder[roomCode]["private"]["exitCards"].shift();
+        //TODO pick option
+        allGameStateHolder[roomCode]["private"]["gameMap"].triggerExitCard(playerId, topCard, "1")
+        addItemToLog(roomCode, `${getPlayerInfoFromIdFunc(playerId).name} picked up the EXIT card: ${topCard.name}`);
+    } else {
+        console.log("Restocking exit deck");
+        restockExitCardsDeck(roomCode);
+        playerPullsExitCard(roomCode, playerId);
+    }
+}
 
+function playerTriggerSpecificExitCardOption(roomCode, playerId, option) {
+    allGameStateHolder[roomCode]["private"]["gameMap"].triggerExitCard(playerId, topCard, "1")
 }
 
 function checkTopCard(roomCode, playerId) {
     if (allGameStateHolder[roomCode]["private"]["caveCards"].length > 0) {
         let topCardNow = allGameStateHolder[roomCode]["private"]["caveCards"][0];
-        console.log(JSON.stringify(topCardNow));
-        if (topCardNow.tag == DRAGON_CARD_TAG) {
+        console.log(`NEXRT CARD VISIBLE: ${JSON.stringify(topCardNow)}`);
+        if (topCardNow.tag == CardTags.DRAGON_CARD_TAG) {
             console.log("DRAGON IS NEXT CARDDDD");
             if (playerId == null) {
-                shuffleDeck(roomCode)
+                shuffleDeck(roomCode, "caveCards")
                 checkTopCard(roomCode, null);
             } else {
                 playerPullsCaveCard(roomCode, playerId);
             }
-        } else {
-
         }
+    } else {
+        restockCaveCardsDeck(roomCode);
     }
 }
 
-function shuffleDeck(roomCode) {
-    allGameStateHolder[roomCode]["private"]["caveCards"] = Utils.shuffleArray(allGameStateHolder[roomCode]["private"]["caveCards"]);
+function getTopVisibleCaveCard(roomCode) {
+    return allGameStateHolder[roomCode]["private"]["caveCards"][0];
+}
+
+function shuffleDeck(roomCode, deckName) {
+    allGameStateHolder[roomCode]["private"][deckName] = Utils.shuffleArray(allGameStateHolder[roomCode]["private"][deckName]);
 }
 
 function generateFreshExitDeck(roomCode) {
-    /*
-    1x all OR two
-    1x switch OR two
-    1x switch OR all
-    1x all OR one
-    1x one OR 3 gold
-    3x one
-    2x two OR one
-    2x one or switch
-    2x all
-    2x two
-    */
+    return ExitDeckGen(allGameStateHolder, roomCode);
 }
 
-/*
-9x dragons
-15x 2 and danger
-5x one and safe
-29x one
-
-2-6
-*/
-
 function generateFreshCaveDeck(roomCode) {
-    let countForId = 0;
-    let caveCardsDeck = [];
-    for (let i = 0; i < dragonCardNumber; i++) {
-        caveCardsDeck.push(
-            new Card.Card(
-                "Dragon",
-                DRAGON_CARD_TAG,
-                countForId,
-                () => {
-                    allGameStateHolder[roomCode]["private"]["gameMap"].moveDragon();
-                }
-            )
-        )
-        countForId++;
-    }
-    for (let i = 0; i < twoGemsOneDangerNumber; i++) {
-        caveCardsDeck.push(
-            new Card.Card(
-                "Closer",
-                "closer",
-                countForId,
-                (player) => {
-                    allGameStateHolder[roomCode]["private"]["gameMap"].collectGems(player, 2);
-                    allGameStateHolder[roomCode]["private"]["gameMap"].movePlayerByAmount(player, 1);
-                }
-            )
-        )
-        countForId++;
-    }
-    for (let i = 0; i < oneGemNumber; i++) {
-        caveCardsDeck.push(
-            new Card.Card(
-                "One Gem",
-                "one",
-                countForId,
-                (player) => {
-                    allGameStateHolder[roomCode]["private"]["gameMap"].collectGems(player, 1);
-                }
-            )
-        )
-        countForId++;
-    }
-    for (let i = 0; i < oneGemOneSafeNumber; i++) {
-        caveCardsDeck.push(
-            new Card.Card(
-                "One and Out",
-                "one-out",
-                countForId,
-                (player) => {
-                    allGameStateHolder[roomCode]["private"]["gameMap"].collectGems(player, 1);
-                    allGameStateHolder[roomCode]["private"]["gameMap"].movePlayerByAmount(player, -1);
-                }
-            )
-        )
-        countForId++;
-    }
-    caveCardsDeck = Utils.shuffleArray(caveCardsDeck);
-    // console.log(caveCardsDeck);
-    return caveCardsDeck;
+    return CaveDeckGen(allGameStateHolder, roomCode);
+}
+
+function updateGameStateObject(roomCode) {
+    let thisGame = allGameStateHolder[roomCode]["private"]["gameMap"];
+    allGameStateHolder[roomCode]["public"]["game"] = thisGame;
+    allGameStateHolder[roomCode]["public"]["topCaveCard"] = getTopVisibleCaveCard(roomCode);
 }
 
 module.exports = {
@@ -188,14 +162,34 @@ module.exports = {
 }
 
 function setup(app, io, getGameData, getPlayerInfoFromId) {
+    getPlayerInfoFromIdFunc = getPlayerInfoFromId;
     io.on("connection", (socket) => {
 
         socket.on(`${GAME_TAG}-take-top-cave-card`, (socketId, roomCode) => {
             playerPullsCaveCard(roomCode, socketId);
+            let nextPlayerIndex = getNextPlayerId(roomCode);
+            allGameStateHolder[roomCode]["public"].currentPlayerIndex = nextPlayerIndex;
+            updateGame(io, roomCode);
+        })
+
+        socket.on(`${GAME_TAG}-exit-option-chossen`, (socketId, roomCode, switchingPlayerId) => {
+            // playerPullsExitCard(roomCode, socketId);
+            // let nextPlayerIndex = getNextPlayerId(roomCode);
+            // allGameStateHolder[roomCode]["public"].currentPlayerIndex = nextPlayerIndex;
+            // updateGame(io, roomCode);
+        })
+        socket.on(`${GAME_TAG}-exit-option-switch-selection`, (socketId, roomCode, switchingPlayerId) => {
+            // playerPullsExitCard(roomCode, socketId);
+            // let nextPlayerIndex = getNextPlayerId(roomCode);
+            // allGameStateHolder[roomCode]["public"].currentPlayerIndex = nextPlayerIndex;
+            // updateGame(io, roomCode);
         })
 
         socket.on(`${GAME_TAG}-take-top-exit-card`, (socketId, roomCode) => {
-            playerPullsCaveCard(roomCode, socketId);
+            playerPullsExitCard(roomCode, socketId);
+            let nextPlayerIndex = getNextPlayerId(roomCode);
+            allGameStateHolder[roomCode]["public"].currentPlayerIndex = nextPlayerIndex;
+            updateGame(io, roomCode);
         })
 
         socket.on(`${GAME_TAG}-example`, (socketId, roomCode, rps) => {
@@ -231,6 +225,16 @@ function setup(app, io, getGameData, getPlayerInfoFromId) {
     });
 }
 
+function getNextPlayerId(roomCode) {
+    let newIndex = allGameStateHolder[roomCode]["public"].currentPlayerIndex;
+    newIndex = newIndex + 1;
+    if (allGameStateHolder[roomCode]["public"].players[newIndex] != undefined) {
+        return newIndex;
+    } else {
+        return 0;
+    }
+}
+
 function isGameOver(roomCode, gameObj) {
     let allScores = 0;
     for (const [key, value] of Object.entries(allGameStateHolder[roomCode].public["score"])) {
@@ -259,6 +263,7 @@ function startGame(io, roomCode, players) {
 
     allGameStateHolder[roomCode]["public"] = createStartGameState(Utils.getRandomNumberInclusive(0, players.length - 1), players);
     // allGameStateHolder[roomCode] = createStartGameState(getRandomNumberInclusive(0, players.length - 1), players);
+    updateGameStateObject(roomCode);
     console.log(`===> OBJECT: ${JSON.stringify(allGameStateHolder[roomCode])}`);
     io.to(roomCode).emit(`${GAME_TAG}-start`, allGameStateHolder[roomCode]["public"]);
 }
@@ -283,7 +288,12 @@ function updateGame(io, roomCode) {
      * Any update logic before sending to client
      * Most likely this logic is done in the socket events above...
      */
-    console.log(allGameStateHolder[roomCode].private);
+    // let thisGame = allGameStateHolder[roomCode]["private"]["gameMap"];
+    // allGameStateHolder[roomCode]["public"]["game"] = thisGame;
+    // allGameStateHolder[roomCode]["public"]["topCaveCard"] = getTopVisibleCaveCard(roomCode);
+    updateGameStateObject(roomCode);
+
+    // console.log(allGameStateHolder[roomCode].privae);
     io.to(roomCode).emit(`${GAME_TAG}-update`, allGameStateHolder[roomCode]["public"]);
 }
 
@@ -300,10 +310,12 @@ function createStartGameState(currentPlayerIndex, players) {
     return {
         "log": [],
         "currentPlayerIndex": currentPlayerIndex,
+        "game": {},
         "players": players,
         "score": {}
     }
 }
+
 
 function increasePlayerScore(playerId, roomCode, amount) {
     if (allGameStateHolder[roomCode]["public"]["score"][playerId] == undefined) {
