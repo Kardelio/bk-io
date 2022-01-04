@@ -1,8 +1,8 @@
 function continueToAskForBits() {
-    // requestAAbits();
-    // setInterval(() => {
-    //     requestAAbits();
-    // }, 5000);
+    requestAAbits();
+    setInterval(() => {
+        requestAAbits();
+    }, 5000);
 }
 
 function requestAAbits() {
