@@ -56,7 +56,7 @@ module.exports = function(app) {
                                     email: attemptedUser.email,
                                     id: attemptedUser.id,
                                 }, process.env.JWT_KEY, {
-                                    expiresIn: "1h"
+                                    expiresIn: process.env.TOKEN_EXPIRE_TIME
                                 }, (err, token) => {
                                     if (err) {
                                         console.log(err);
