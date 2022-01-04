@@ -34,8 +34,8 @@ export function flipit(guess) {
 
 function renderGameState(state) {
     getGameSpace().innerHTML = `
-        <div id='${GAME_TAG}-heads'><img src="${GAME_TAG}/media/coin-heads.png" style="width: 100px; height: 100px;"></div>
-        <div id='${GAME_TAG}-tails'><img src="${GAME_TAG}/media/coin-tails.png" style="width: 100px; height: 100px;"></div>
+        <div id='${GAME_TAG}-heads'><img src="/${GAME_TAG}/media/coin-heads.png" style="width: 100px; height: 100px;"></div>
+        <div id='${GAME_TAG}-tails'><img src="/${GAME_TAG}/media/coin-tails.png" style="width: 100px; height: 100px;"></div>
         <div id='${GAME_TAG}-coin-buttons' class='${GAME_TAG}-buttons-div'></div>
         <div id='${GAME_TAG}-score'></div>
     `;

@@ -23,9 +23,9 @@ function setup() {
     //KEEP IN MIND SPECTATORS CAN SEE
     getGameSpace().innerHTML = `
         <div class="simple-row-container">
-            <img src="${GAME_TAG}/media/rock.png" style="width: 100px; height: 100px;">
-            <img src="${GAME_TAG}/media/paper.png" style="width: 100px; height: 100px;">
-            <img src="${GAME_TAG}/media/scissors.png" style="width: 100px; height: 100px;">
+            <img src="/${GAME_TAG}/media/rock.png" style="width: 100px; height: 100px;">
+            <img src="/${GAME_TAG}/media/paper.png" style="width: 100px; height: 100px;">
+            <img src="/${GAME_TAG}/media/scissors.png" style="width: 100px; height: 100px;">
         </div>
     `;
 }
@@ -71,13 +71,13 @@ function renderGameState(state) {
         getGameSpace().innerHTML = `
         <div class="simple-row-container standard-gap">
             <button onclick='mapOfGames["${GAME_TAG}"].selectRPS("rock")'>
-                <img src="${GAME_TAG}/media/rock.png" style="width: 100px; height: 100px;">
+                <img src="/${GAME_TAG}/media/rock.png" style="width: 100px; height: 100px;">
             </button>
             <button onclick='mapOfGames["${GAME_TAG}"].selectRPS("paper")'>
-                <img src="${GAME_TAG}/media/paper.png" style="width: 100px; height: 100px;">
+                <img src="/${GAME_TAG}/media/paper.png" style="width: 100px; height: 100px;">
             </button>
             <button onclick='mapOfGames["${GAME_TAG}"].selectRPS("scissors")'>
-                <img src="${GAME_TAG}/media/scissors.png" style="width: 100px; height: 100px;">
+                <img src="/${GAME_TAG}/media/scissors.png" style="width: 100px; height: 100px;">
             </button>
         </div>
         ${displayScore(state)}
