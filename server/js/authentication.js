@@ -15,6 +15,7 @@ module.exports = function(app) {
         if (req.body.email != undefined && req.body.email != null && req.body.email.length > 0 &&
             req.body.username != undefined && req.body.username != null && req.body.username.length > 0 &&
             req.body.password != undefined && req.body.password != null && req.body.password.length > 0) {
+            console.log("===> User " + req.body.email + " attempting to register...");
             if (utils.doesUserAlreadyExistWithUsername(req.body.username) || utils.doesUserAlreadyExistWithEmail(req.body.email)) {
                 response.setNegativeResponse("User already exists");
                 res.status(500).json(response);
@@ -44,7 +45,7 @@ module.exports = function(app) {
             req.body.password != undefined && req.body.password != null && req.body.password.length > 0) {
             console.log("===> User " + req.body.email + " attempting to login...");
             let attemptedUser = utils.getUserWithEmail(req.body.email);
-            if (attemptedUser != undefined || attemptedUser != null) {
+            if (attemptedUser != undefined && attemptedUser != null) {
                 if (attemptedUser.verified === "1") {
                     bcrypt.compare(req.body.password, attemptedUser.hash)
                         .then(compared => {
