@@ -1,5 +1,8 @@
 const exec = require('child_process').exec;
 const fs = require("fs");
+const user = require("./user.js");
+
+const USER_FILE = "server/data/shadow";
 
 module.exports = {
     makeid: makeid,
@@ -7,7 +10,13 @@ module.exports = {
     readJsonFile: readJsonFile,
     writeJsonFile: writeJsonFile,
     getRandomNumberInclusive: getRandomNumberInclusive,
-    shuffleArray: shuffleArray
+    shuffleArray: shuffleArray,
+    getAllAccounts: getAllAccounts,
+    verifyUser: verifyUser,
+    addUserToList: addUserToList,
+    doesUserAlreadyExistWithUsername: doesUserAlreadyExistWithUsername,
+    doesUserAlreadyExistWithEmail: doesUserAlreadyExistWithEmail,
+    getUserWithEmail: getUserWithEmail
 }
 
 function makeid(length) {
@@ -61,4 +70,57 @@ function shuffleArray(array) {
         array[j] = temp;
     }
     return array;
+}
+
+function getAllAccounts() {
+    if (fs.existsSync(USER_FILE)) {
+        let rawData = fs.readFileSync(USER_FILE, 'utf8');
+        let splitLines = rawData.split("\n");
+        let listOfUsers = [];
+        splitLines.forEach(line => {
+            let split = line.split("|");
+            listOfUsers.push(new user.User(split[0], split[1], split[2], split[3], split[4]));
+        });
+        return listOfUsers;
+    } else {
+        return [];
+    }
+}
+
+function addUserToList(userObj) {
+    fs.appendFileSync(USER_FILE, `${userObj.splitToString()}\n`);
+}
+
+function deleteSpecificUserFromFile(params) {
+
+}
+
+function editSpecificUserRowInFile(params) {
+
+}
+
+function doesUserAlreadyExistWithUsername(username) {
+    return getAllAccounts().filter(e => e.username === username).length > 0
+}
+
+function doesUserAlreadyExistWithEmail(email) {
+    return getAllAccounts().filter(e => e.email === email).length > 0
+}
+
+function getUserWithEmail(email) {
+    return getAllAccounts().filter(e => e.email === email)[0];
+}
+
+function doesUserAlreadyExistWithUsernameOrEmail(username, email) {
+    return getAllAccounts().filter(e => e.username === username || e.email === email).length > 0
+}
+
+function getSpecificUserById(id) {
+    return getAllAccounts().filter(e => e.id === id);
+}
+
+function verifyUser(userId) {
+
+    let users = getAllAccounts();
+
 }

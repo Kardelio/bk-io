@@ -32,9 +32,9 @@ function setup() {
     //KEEP IN MIND SPECTATORS CAN SEE
     getGameSpace().innerHTML = `
         <div class="simple-row-container">
-            <img src="${GAME_TAG}/media/rock.png" style="width: 100px; height: 100px;">
-            <img src="${GAME_TAG}/media/paper.png" style="width: 100px; height: 100px;">
-            <img src="${GAME_TAG}/media/scissors.png" style="width: 100px; height: 100px;">
+            <img src="/${GAME_TAG}/media/rock.png" style="width: 100px; height: 100px;">
+            <img src="/${GAME_TAG}/media/paper.png" style="width: 100px; height: 100px;">
+            <img src="/${GAME_TAG}/media/scissors.png" style="width: 100px; height: 100px;">
         </div>
     `;
 }
