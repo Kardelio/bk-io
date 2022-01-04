@@ -12,13 +12,24 @@ const io = new Server(server, {
     }
 });
 const validator = require('validator');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 
 /**
  * Modules in ./server/js
  */
 const utils = require('./server/js/utils');
 
-app.use(express.static(path.join(__dirname, 'static')));
+app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(express.static(path.join(__dirname, 'auth')));
+app.use('/shared', express.static(path.join(__dirname, 'shared')));
+// NOTE: pre auth addition
+// app.use(express.static(path.join(__dirname, 'static')));
+
+require("./server/js/authentication.js")(app);
 
 let idToPlayerNameMap = {};
 let roomToPlayerIdMap = {};
@@ -63,7 +74,6 @@ function getAABitsFromServer() {
         });
 }
 
-console.log(process.env.SHOULD_GET_AABITS);
 if (process.env.SHOULD_GET_AABITS == "true") {
     getAABitsOnLoop();
 }
