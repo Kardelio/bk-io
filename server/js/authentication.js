@@ -22,12 +22,14 @@ module.exports = function(app) {
             } else {
                 bcrypt.hash(req.body.password, 10)
                     .then(hash => {
+                        let newUser = new user.User(
+                            uuidv4(), req.body.username, req.body.email, hash, "0"
+                        )
                         utils.addUserToList(
-                            new user.User(
-                                uuidv4(), req.body.username, req.body.email, hash, "0"
-                            )
+                            newUser
                         );
                         response.message = "User created successfully";
+                        response.data = newUser.splitToString();
                         res.status(200).json(response);
                     })
                     .catch(err => {

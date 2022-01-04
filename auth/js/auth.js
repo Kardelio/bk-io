@@ -124,6 +124,7 @@ function userRegister() {
                     <div>Please notify the server admin and tell them to verify your email address: <span class="email-span">${email}</span></div>
                 `);
                     clearRegisterFields();
+                    showShadowContainerBox(d.data);
                 })
                 .catch(err => {
                     console.log("err:", err);
@@ -141,6 +142,11 @@ function clearRegisterFields() {
     document.getElementById("email-reg").value = "";
     document.getElementById("password-reg").value = "";
     document.getElementById("username-reg").value = "";
+}
+
+function showShadowContainerBox(line) {
+    document.getElementById("shadow-container-outer").style.display = "flex";
+    document.getElementById("shadow-line-container").innerHTML = line;
 }
 
 function postRegister(username, email, password) {
