@@ -198,6 +198,27 @@ module.exports = function(app) {
     });
 
 
+    app.get("/all-users", authenticateAdmin, (req, res) => {
+        const response = new ApiResponse()
+        queryHandler.postQuery(`SELECT * from ${process.env.PG_DB_USER_TABLE}`)
+            .then(d => {
+                if (d.length > 0) {
+                    response.message = `Here are all users`
+                    response.data = d.map((line) => {
+                        return `${line.email} - ${line.verified}`
+                    })
+                    res.status(200).json(response);
+                } else {
+                    response.setNegativeResponse(`Could not find ANY users!`);
+                    res.status(500).json(response);
+                }
+            })
+            .catch(e => {
+                response.setNegativeResponse(`/register (1 - query) Server Error: ${e}`);
+                res.status(500).json(response);
+            })
+    });
+
     app.get("/verify-email", authenticateAdmin, (req, res) => {
         const response = new ApiResponse()
 
