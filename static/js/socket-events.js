@@ -6,7 +6,8 @@ if (hostname == 'localhost') {
      * For local testing you need to change this url to match your local IP address...
      */
     // socket = io('http://192.168.2.105:3000/');
-    socket = io('http://192.168.0.32:3000/');
+    // socket = io('http://192.168.0.32:3000/');
+    socket = io('http://192.168.0.38:3000/');
     console.log("IS RUNNING IN DEBUG");
 } else {
     socket = io('https://bk-io.herokuapp.com/');

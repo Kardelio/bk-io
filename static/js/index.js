@@ -66,7 +66,12 @@ document.addEventListener("DOMContentLoaded", event => {
     askForVersionInfo();
 
     let chatExpanded = getFromLocalStorage(EXPANDED_CHAT)
-    setChatExpanded(chatExpanded);
+
+    if (chatExpanded) {
+        setChatExpanded(chatExpanded);
+    } else {
+        setChatExpanded("true");
+    }
 });
 
 function leaveRoomUI() {

@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 const ApiResponse = require("./ApiResponse.js");
 
+const REDIRECT_LOGIN_URL = "/auth";
+
 module.exports = function(app) {
 
     app.post("/register", (req, res) => {
@@ -71,6 +73,10 @@ module.exports = function(app) {
                                             "email": attemptedUser.email
                                         }
                                         console.log("===> User " + req.body.email + " successfully logged in!");
+                                        // res.cookie("token", token);
+                                        res.cookie("email", attemptedUser.email, { encode: (value) => { return value } });
+                                        res.cookie("id", attemptedUser.id, { encode: (value) => { return value } });
+                                        res.cookie("token", token, { encode: (value) => { return value } });
                                         res.status(200).json(response);
                                     }
                                 })
@@ -97,6 +103,18 @@ module.exports = function(app) {
         }
     })
 
+    app.get("/logout", (req, res) => {
+        console.log("===> User " + req.cookies.email + " attempting to logout...");
+        // res.cookie("token", "", { encode: (value) => { return value } });
+        // res.status(200).json({});
+        res.clearCookie('token', { path: '/' });
+        res.clearCookie('id', { path: '/' });
+        res.clearCookie('email', { path: '/' });
+        res.status(200).json({});
+        // res.redirect(307, '/test');
+        // res.redirect('/auth');
+    });
+
     /**
      * authenticate middleware function
      * @param {*} req 
@@ -104,50 +122,51 @@ module.exports = function(app) {
      * @param {*} next 
      */
     //Use this for API requets
-    function authenticate(req, res, next) {
-        console.log("===> Auth Check...");
-        console.log(req.cookies);
+    // function authenticate(req, res, next) {
+    //     console.log("===> Auth Check...");
+    //     console.log(req.cookies);
 
-        try {
-            const token = req.headers.authorization.split(" ")[1];
-            console.log(token);
+    //     try {
+    //         const token = req.headers.authorization.split(" ")[1];
+    //         console.log(token);
 
-            const decoded = jwt.verify(token, process.env.JWT_KEY);
-            req.userData = decoded;
-            res.cookie("email", decoded.Email, { encode: (value) => { return value } });
-            res.cookie("id", decoded.UserID, { encode: (value) => { return value } });
-            res.cookie("token", token, { encode: (value) => { return value } });
-            next();
-        } catch (err) {
-            console.log("===> User not authenticated! REDIRECTING");
-            return res.redirect('/');
-            // return res.status(401).json({ message: "Auth Failed" });
-        }
-    }
+    //         const decoded = jwt.verify(token, process.env.JWT_KEY);
+    //         req.userData = decoded;
+    //         res.cookie("email", decoded.Email, { encode: (value) => { return value } });
+    //         res.cookie("id", decoded.UserID, { encode: (value) => { return value } });
+    //         res.cookie("token", token, { encode: (value) => { return value } });
+    //         next();
+    //     } catch (err) {
+    //         console.log("===> User not authenticated! REDIRECTING");
+    //         return res.redirect("/auth");
+    //         // return res.status(401).json({ message: "Auth Failed" });
+    //     }
+    // }
 
-    function authenticateHTMLPage(req, res, next) {
-        if (process.env.SKIP_LOGIN == "true") {
-            console.log(`IMPORTANT ---> Login skipped in authenticateHTMLPage`);
-            next();
-        } else {
-            try {
-                const token = req.cookies.token;
-                // console.log(token);
+    // function authenticateHTMLPage(req, res, next) {
+    //     if (process.env.SKIP_LOGIN == "true") {
+    //         console.log(`IMPORTANT ---> Login skipped in authenticateHTMLPage`);
+    //         next();
+    //     } else {
+    //         try {
+    //             const token = req.cookies.token;
+    //             // console.log(token);
 
-                const decoded = jwt.verify(token, process.env.JWT_KEY);
-                req.userData = decoded;
-                res.cookie("email", decoded.email, { encode: (value) => { return value } });
-                res.cookie("id", decoded.id, { encode: (value) => { return value } });
-                res.cookie("token", token, { encode: (value) => { return value } });
-                next();
-            } catch (err) {
-                console.log("===> User not authenticated! REDIRECTING");
-                return res.redirect('/');
-                // return res.status(401).json({ message: "Auth Failed" });
-            }
-        }
-    }
+    //             const decoded = jwt.verify(token, process.env.JWT_KEY);
+    //             req.userData = decoded;
+    //             res.cookie("email", decoded.email, { encode: (value) => { return value } });
+    //             res.cookie("id", decoded.id, { encode: (value) => { return value } });
+    //             res.cookie("token", token, { encode: (value) => { return value } });
+    //             next();
+    //         } catch (err) {
+    //             console.log("===> User not authenticated! REDIRECTING");
+    //             return res.redirect("/auth");
+    //             // return res.status(401).json({ message: "Auth Failed" });
+    //         }
+    //     }
+    // }
 
-    app.use('/io', authenticateHTMLPage, express.static('static'));
+    // app.use(authenticateHTMLPage, express.static(path.join(__dirname, 'static'), { redirect: false }));
+    // app.use("/bbb", express.static(path.join(__dirname, 'auth')));
 
 }

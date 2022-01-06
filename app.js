@@ -4,6 +4,7 @@ const app = express();
 const path = require('path');
 const fs = require("fs");
 const http = require('http');
+const jwt = require('jsonwebtoken');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
@@ -20,16 +21,48 @@ var cookieParser = require('cookie-parser');
  */
 const utils = require('./server/js/utils');
 
+const REDIRECT_LOGIN_URL = "/auth";
+
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(express.static(path.join(__dirname, 'auth')));
-app.use('/shared', express.static(path.join(__dirname, 'shared')));
+
+function authenticateHTMLPage(req, res, next) {
+    if (process.env.SKIP_LOGIN == "true") {
+        console.log(`IMPORTANT ---> Login skipped in authenticateHTMLPage`);
+        next();
+    } else {
+        try {
+            const token = req.cookies.token;
+            // console.log(token);
+
+            const decoded = jwt.verify(token, process.env.JWT_KEY);
+            req.userData = decoded;
+            // res.cookie("email", decoded.email, { encode: (value) => { return value } });
+            // res.cookie("id", decoded.id, { encode: (value) => { return value } });
+            // res.cookie("token", token, { encode: (value) => { return value } });
+            next();
+        } catch (err) {
+            console.log("===> User not authenticated! REDIRECTING");
+            console.log(err);
+            return res.redirect(REDIRECT_LOGIN_URL);
+            // return res.status(401).json({ message: "Auth Failed" });
+        }
+    }
+}
+
+require("./server/js/authentication.js")(app);
+
+
+// app.use(express.static(path.join(__dirname, 'auth')));
+// app.use(express.static(path.join(__dirname, 'auth')));
+
+
 // NOTE: pre auth addition
 // app.use(express.static(path.join(__dirname, 'static')));
 
-require("./server/js/authentication.js")(app);
+
 
 let idToPlayerNameMap = {};
 let roomToPlayerIdMap = {};
@@ -365,6 +398,11 @@ function getAABitsRequest() {
             })
     });
 }
+
+app.use('/shared', express.static(path.join(__dirname, 'shared')));
+//ORDER FOR  THE TWO BELOW IS A PROBLEM!
+app.use(REDIRECT_LOGIN_URL, express.static(path.join(__dirname, 'auth')));
+app.use(authenticateHTMLPage, express.static(path.join(__dirname, 'static')));
 
 const port = process.env.PORT || 3000
 server.listen(port, () => {

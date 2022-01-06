@@ -72,6 +72,10 @@ function shuffleArray(array) {
     return array;
 }
 
+function newgetAllAccounts(params) {
+
+}
+
 function getAllAccounts() {
     if (fs.existsSync(USER_FILE)) {
         let rawData = fs.readFileSync(USER_FILE, 'utf8');

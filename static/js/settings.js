@@ -16,6 +16,10 @@ document.addEventListener("DOMContentLoaded", event => {
         storeChangedUserSettings();
         toggleUserSettingsMenu();
     };
+    document.getElementById("settings-logout-button").onclick = () => {
+        logoutTrigger();
+        toggleUserSettingsMenu();
+    }
 });
 
 function storeChangedUserSettings() {

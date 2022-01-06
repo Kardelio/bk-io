@@ -64,11 +64,11 @@ function userLogin() {
         if (validateEmail(email)) {
             postLogin(email, password)
                 .then(d => {
-                    document.cookie = `token=${d.data.token}`;
-                    window.location.href = "io";
+                    // document.cookie = `token=${d.data.token}`;
                     setInLocalStorage(CURRENT_STORED_USERNAME, d.data.username);
                     setInLocalStorage(LOGIN_USERNAME, d.data.username);
                     setInLocalStorage(LOGIN_EMAIL, d.data.email);
+                    window.location.href = "/";
                 })
                 .catch(err => {
                     console.log("err:", err);
