@@ -1,6 +1,17 @@
 const exec = require('child_process').exec;
 const fs = require("fs");
 const user = require("./user.js");
+const queryHandler = require("./queryHandler");
+
+// const Pool = require('pg').Pool
+// const pool = new Pool({
+//     user: 'me',
+//     host: 'localhost',
+//     database: 'example',
+//     password: 'Appsmart123',
+//     port: 5432,
+// })
+
 
 const USER_FILE = "server/data/shadow";
 
@@ -72,7 +83,7 @@ function shuffleArray(array) {
     return array;
 }
 
-function newgetAllAccounts(params) {
+function newgetAllAccounts() {
 
 }
 

@@ -21,6 +21,21 @@ var cookieParser = require('cookie-parser');
  */
 const utils = require('./server/js/utils');
 
+const { User } = require('./server/js/user');
+
+const queryHandler = require('./server/js/queryHandler');
+queryHandler.initialiseDB();
+
+// queryHandler.registerUser(
+//     new User(null, "bob", "bob@bob.com", "butts", false), (out) => {
+//         console.log(`user reg: ${out}`);
+//     }
+// )
+
+// queryHandler.getAllUsers((d) => {
+//     console.log(d);
+// });
+
 const REDIRECT_LOGIN_URL = "/auth";
 
 app.use(bodyParser.json());

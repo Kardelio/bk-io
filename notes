@@ -1,0 +1,32 @@
+## Install postgres on server
+
+    brew install postgresql
+
+    brew services list
+
+    brew services start postgresql
+
+    psql postgres
+    (default postgres instant - connect)
+
+    \q | Exit psql connection
+    \c | Connect to a new database
+    \dt | List all tables
+    \du | List all roles
+    \list | List databases
+
+(https://blog.logrocket.com/nodejs-expressjs-postgresql-crud-rest-api-example/)
+
+
+## node postgres
+(client)
+
+    npm install pg
+
+
+# Check if table exists
+    SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = '___';
+(returns number of rows)
+
+
+
