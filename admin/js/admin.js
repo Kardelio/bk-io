@@ -14,7 +14,6 @@ function continueToAskForLive() {
 
 const fake = {
     "users": [
-        "ben@admin.com - true - kTHYzmpHMkBPRymd29qkrfebQsJC446PRHk2pn552X7DAvQ64t",
         "benzin7@hotmail.co.uk - true - ben",
         "test@test.com - true - test",
         "harrison.brown@live.co.uk - true - hzzæ",
@@ -116,10 +115,10 @@ function displayLiveData(data) {
 }
 
 function getLiveInfo() {
-    displayLiveData(fake);
-    // getLive().then(d => {
-    //     displayLiveData(d.data);
-    // })
+    // displayLiveData(fake);
+    getLive().then(d => {
+        displayLiveData(d.data);
+    })
 }
 
 function getLive() {
