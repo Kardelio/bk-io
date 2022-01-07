@@ -1,17 +1,12 @@
-const utils = require('./utils');
-const express = require('express');
 const user = require('./user');
-const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const express = require('express');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 const ApiResponse = require("./ApiResponse.js");
 const queryHandler = require('./queryHandler');
-const { query } = require('express');
 
-const REDIRECT_LOGIN_URL = "/auth";
-
-module.exports = function(app) {
+module.exports = function(app, io, getPlayerUsingId) {
 
     app.post("/register", (req, res) => {
         const response = new ApiResponse()
@@ -74,12 +69,8 @@ module.exports = function(app) {
             `)
                 .then(d => {
                     if (d.length > 0) {
-
                         let attemptedUser = d[0];
-                        console.log(attemptedUser);
                         if (attemptedUser.verified == true) {
-                            console.log("user is verified");
-
                             bcrypt.compare(cleanPassword, attemptedUser.hash)
                                 .then(compared => {
                                     if (compared) {
@@ -131,58 +122,6 @@ module.exports = function(app) {
                     response.setNegativeResponse(`/register (1 - PG SELECT) Server Error: ${e}`);
                     res.status(500).json(response);
                 })
-
-
-
-            // let attemptedUser = utils.getUserWithEmail(req.body.email);
-            // if (attemptedUser != undefined && attemptedUser != null) {
-            //     if (attemptedUser.verified === "1") {
-            //         bcrypt.compare(req.body.password, attemptedUser.hash)
-            //             .then(compared => {
-            //                 if (compared) {
-            //                     jwt.sign({
-            //                         email: attemptedUser.email,
-            //                         id: attemptedUser.id,
-            //                     }, process.env.JWT_KEY, {
-            //                         expiresIn: process.env.TOKEN_EXPIRE_TIME
-            //                     }, (err, token) => {
-            //                         if (err) {
-            //                             console.log(err);
-            //                             response.setNegativeResponse(`Authentication Failed`);
-            //                             res.status(403).json(response);
-            //                         } else {
-            //                             response.message = "Login success";
-            //                             // response.data = token;
-            //                             response.data = {
-            //                                 "token": token,
-            //                                 "username": attemptedUser.username,
-            //                                 "email": attemptedUser.email
-            //                             }
-            //                             console.log("===> User " + req.body.email + " successfully logged in!");
-            //                             // res.cookie("token", token);
-            //                             res.cookie("email", attemptedUser.email, { encode: (value) => { return value } });
-            //                             res.cookie("id", attemptedUser.id, { encode: (value) => { return value } });
-            //                             res.cookie("token", token, { encode: (value) => { return value } });
-            //                             res.status(200).json(response);
-            //                         }
-            //                     })
-            //                 } else {
-            //                     response.setNegativeResponse(`Authentication Failed`);
-            //                     res.status(403).json(response);
-            //                 }
-            //             })
-            //             .catch(err => {
-            //                 response.setNegativeResponse(`Error with Pass compare: ${err}`);
-            //                 res.status(500).json(response);
-            //             });
-            //     } else {
-            //         response.setNegativeResponse("User is NOT verified");
-            //         res.status(500).json(response);
-            //     }
-            // } else {
-            //     response.setNegativeResponse("User can NOT be found");
-            //     res.status(500).json(response);
-            // }
         } else {
             response.setNegativeResponse("Email or Password was not suitable");
             res.status(500).json(response);
@@ -197,6 +136,42 @@ module.exports = function(app) {
         res.status(200).json({});
     });
 
+    app.get("/live", authenticateAdmin, (req, res) => {
+        const response = new ApiResponse()
+        queryHandler.postQuery(`SELECT * from ${process.env.PG_DB_USER_TABLE}`)
+            .then(d => {
+                if (d.length > 0) {
+                    let currentUsers = d.map((line) => {
+                        return `${line.email} - ${line.verified}`
+                    });
+                    let roomMap = io.sockets.adapter.rooms;
+                    let out = [];
+                    for (const [key, value] of roomMap.entries()) {
+                        let userNames = [];
+                        value.forEach(element => {
+                            userNames.push(getPlayerUsingId(element));
+                        });
+                        out.push({
+                            "room": key,
+                            "users": userNames
+                        })
+                    }
+                    response.message = `Here are all users`
+                    response.data = {
+                        "users": currentUsers,
+                        "rooms": out
+                    }
+                    res.status(200).json(response);
+                } else {
+                    response.setNegativeResponse(`Could not find ANY users!`);
+                    res.status(500).json(response);
+                }
+            })
+            .catch(e => {
+                response.setNegativeResponse(`/register (1 - query) Server Error: ${e}`);
+                res.status(500).json(response);
+            })
+    });
 
     app.get("/all-users", authenticateAdmin, (req, res) => {
         const response = new ApiResponse()
@@ -267,31 +242,5 @@ module.exports = function(app) {
             return res.status(500).json({ "message": "You are NOT logged in" });
         }
     }
-    /**
-     * authenticate middleware function
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
-     */
-    //Use this for API requets
-    // function authenticate(req, res, next) {
-    //     console.log("===> Auth Check...");
-    //     console.log(req.cookies);
 
-    //     try {
-    //         const token = req.headers.authorization.split(" ")[1];
-    //         console.log(token);
-
-    //         const decoded = jwt.verify(token, process.env.JWT_KEY);
-    //         req.userData = decoded;
-    //         res.cookie("email", decoded.Email, { encode: (value) => { return value } });
-    //         res.cookie("id", decoded.UserID, { encode: (value) => { return value } });
-    //         res.cookie("token", token, { encode: (value) => { return value } });
-    //         next();
-    //     } catch (err) {
-    //         console.log("===> User not authenticated! REDIRECTING");
-    //         return res.redirect("/auth");
-    //         // return res.status(401).json({ message: "Auth Failed" });
-    //     }
-    // }
 }

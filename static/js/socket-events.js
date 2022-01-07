@@ -7,7 +7,7 @@ if (hostname == 'localhost') {
      */
     // socket = io('http://192.168.2.105:3000/');
     // socket = io('http://192.168.0.32:3000/');
-    socket = io('http://192.168.0.38:3000/');
+    socket = io('http://192.168.178.39:3000/');
     console.log("IS RUNNING IN DEBUG");
 } else {
     socket = io('https://bk-io.herokuapp.com/');
@@ -16,6 +16,7 @@ if (hostname == 'localhost') {
 socket.on("connect", () => {
     currentSocketId = socket.id;
     setUserDetails(currentSocketId, "");
+    socket.emit("provide-name", currentUserName);
 })
 socket.on("gameCode", (code, playersMap) => {
     showScreen(GAME);

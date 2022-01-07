@@ -1,0 +1,19 @@
+.single-room-block {
+    background-color: lightcyan;
+    padding: 0.5em;
+    border-radius: 5px;
+}
+
+.single-room-name {
+    font-weight: bold;
+    font-size: 110%;
+    margin: 0.3em;
+}
+
+.users-in-room {
+    background-color: lightgray;
+    margin: 0.3em;
+    padding: 0.3em;
+}
+
+.single-user-name {}

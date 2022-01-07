@@ -44,6 +44,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 function authenticateHTMLPage(req, res, next) {
+    console.log(process.env.SKIP_LOGIN);
     if (process.env.SKIP_LOGIN == "true") {
         console.log(`IMPORTANT ---> Login skipped in authenticateHTMLPage`);
         next();
@@ -67,7 +68,33 @@ function authenticateHTMLPage(req, res, next) {
     }
 }
 
-require("./server/js/authentication.js")(app);
+function authenticateAdminHTML(req, res, next) {
+    console.log("===> ADMIN Auth Check...");
+    try {
+        const token = req.cookies.token;
+
+        const decoded = jwt.verify(token, process.env.JWT_KEY);
+        req.userData = decoded;
+        queryHandler.checkIfUserIsAdmin(decoded, (d) => {
+            if (d == true) {
+                console.log("===> User is an ADMIN");
+                next();
+            } else {
+                console.log("===> User is NOT an ADMIN");
+                return res.status(500).json({ "message": "You are NOT an ADMIN - STOP IT" });
+            }
+        });
+    } catch (err) {
+        console.log("===> User not authenticated!");
+        return res.status(500).json({ "message": "You are NOT logged in" });
+    }
+}
+
+function getPlayerUsingId(id) {
+    return { "id": id, "name": idToPlayerNameMap[id] }
+}
+
+require("./server/js/authentication.js")(app, io, getPlayerUsingId);
 
 
 // app.use(express.static(path.join(__dirname, 'auth')));
@@ -184,9 +211,6 @@ function addPlayerToRoom(playerId, roomCode) {
 //     console.log(`****> Players in room ${roomCode}: ${JSON.stringify(roomToPlayerIdMap)}`);
 // }
 
-function getPlayerUsingId(id) {
-    return { "id": id, "name": idToPlayerNameMap[id] }
-}
 
 function checkIfRoomHasAnActiveGame(roomCode) {
     if (activeGames[roomCode] !== undefined) {
@@ -227,9 +251,14 @@ io.on('connection', (socket) => {
         sendPlayerUpdate(playerRoomCode);
     });
 
+    socket.on('provide-name', (name) => {
+        console.log(`===> ${socket.id} (${name}) Providing name!`);
+        idToPlayerNameMap[socket.id] = name;
+    })
+
     socket.on('newroom', (name) => {
         console.log(`===> ${socket.id} (${name}) Started a NEW ROOM`);
-        idToPlayerNameMap[socket.id] = name;
+        // idToPlayerNameMap[socket.id] = name;
         let roomName = utils.makeid(5);
         socket.join(roomName);
         addPlayerToRoom(socket.id, roomName);
@@ -239,7 +268,7 @@ io.on('connection', (socket) => {
 
     socket.on("joinroom", (code, name) => {
         console.log(`===> ${socket.id} (${name}) Joined a ROOM (${code})`);
-        idToPlayerNameMap[socket.id] = name;
+        // idToPlayerNameMap[socket.id] = name;
         const room = io.sockets.adapter.rooms.get(code);
         if (room) {
             socket.join(code);
@@ -415,6 +444,7 @@ function getAABitsRequest() {
 }
 
 app.use('/shared', express.static(path.join(__dirname, 'shared')));
+app.use('/admin', authenticateAdminHTML, express.static(path.join(__dirname, 'admin')));
 //ORDER FOR  THE TWO BELOW IS A PROBLEM!
 app.use(REDIRECT_LOGIN_URL, express.static(path.join(__dirname, 'auth')));
 app.use(authenticateHTMLPage, express.static(path.join(__dirname, 'static')));
