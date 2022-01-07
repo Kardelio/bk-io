@@ -12,6 +12,45 @@ function continueToAskForLive() {
     }, liveDataIntervalTime);
 }
 
+const fake = {
+    "users": [
+        "ben@admin.com - true - kTHYzmpHMkBPRymd29qkrfebQsJC446PRHk2pn552X7DAvQ64t",
+        "benzin7@hotmail.co.uk - true - ben",
+        "test@test.com - true - test",
+        "harrison.brown@live.co.uk - true - hzzæ",
+        "ajzahtiri@gmail.com - true - az",
+        "cjcaudwell@gmail.com - true - Windows"
+    ],
+    "rooms": [{
+            "room": "jZR58",
+            "users": [{
+                "id": "S-B23qcEddT8wHjQAAAD",
+                "name": "ben"
+            }]
+        },
+        {
+            "room": "s01ks",
+            "users": [{
+                "id": "NaxYshFf2CfE45JDAAAF",
+                "name": "ben"
+            }]
+        }
+    ],
+    "online": [{
+            "user": {
+                "id": "S-B23qcEddT8wHjQAAAD",
+                "name": "ben"
+            }
+        },
+        {
+            "user": {
+                "id": "NaxYshFf2CfE45JDAAAF",
+                "name": "ben"
+            }
+        }
+    ]
+};
+
 function displayLiveData(data) {
     // console.log(data);
     let usersOut = "";
@@ -53,7 +92,7 @@ function displayLiveData(data) {
                 </div>
         `;
     });
-    roomsOut += "</div>";
+    roomsOut += "</div></div>";
 
     data.rooms.forEach(room => {
         let singleRoom = "<div class='single-room-block'>";
@@ -77,10 +116,10 @@ function displayLiveData(data) {
 }
 
 function getLiveInfo() {
-    // displayLiveData(fake);
-    getLive().then(d => {
-        displayLiveData(d.data);
-    })
+    displayLiveData(fake);
+    // getLive().then(d => {
+    //     displayLiveData(d.data);
+    // })
 }
 
 function getLive() {
