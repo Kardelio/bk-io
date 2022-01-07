@@ -26,16 +26,6 @@ const { User } = require('./server/js/user');
 const queryHandler = require('./server/js/queryHandler');
 queryHandler.initialiseDB();
 
-// queryHandler.registerUser(
-//     new User(null, "bob", "bob@bob.com", "butts", false), (out) => {
-//         console.log(`user reg: ${out}`);
-//     }
-// )
-
-// queryHandler.getAllUsers((d) => {
-//     console.log(d);
-// });
-
 const REDIRECT_LOGIN_URL = "/auth";
 
 app.use(bodyParser.json());
@@ -44,26 +34,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 function authenticateHTMLPage(req, res, next) {
-    console.log(process.env.SKIP_LOGIN);
     if (process.env.SKIP_LOGIN == "true") {
         console.log(`IMPORTANT ---> Login skipped in authenticateHTMLPage`);
         next();
     } else {
         try {
             const token = req.cookies.token;
-            // console.log(token);
 
             const decoded = jwt.verify(token, process.env.JWT_KEY);
             req.userData = decoded;
-            // res.cookie("email", decoded.email, { encode: (value) => { return value } });
-            // res.cookie("id", decoded.id, { encode: (value) => { return value } });
-            // res.cookie("token", token, { encode: (value) => { return value } });
             next();
         } catch (err) {
             console.log("===> User not authenticated! REDIRECTING");
             console.log(err);
             return res.redirect(REDIRECT_LOGIN_URL);
-            // return res.status(401).json({ message: "Auth Failed" });
         }
     }
 }
@@ -95,15 +79,6 @@ function getPlayerUsingId(id) {
 }
 
 require("./server/js/authentication.js")(app, io, getPlayerUsingId);
-
-
-// app.use(express.static(path.join(__dirname, 'auth')));
-// app.use(express.static(path.join(__dirname, 'auth')));
-
-
-// NOTE: pre auth addition
-// app.use(express.static(path.join(__dirname, 'static')));
-
 
 
 let idToPlayerNameMap = {};
@@ -202,15 +177,6 @@ function addPlayerToRoom(playerId, roomCode) {
     }
     console.log(`****> Players in room ${roomCode}: ${JSON.stringify(roomToPlayerIdMap)}`);
 }
-
-// function removePlayerFromRoom(playerId, roomCode) {
-//     const index = roomToPlayerIdMap[roomCode].indexOf(playerId);
-//     if (index > -1) {
-//         roomToPlayerIdMap[roomCode].splice(index, 1);
-//     }
-//     console.log(`****> Players in room ${roomCode}: ${JSON.stringify(roomToPlayerIdMap)}`);
-// }
-
 
 function checkIfRoomHasAnActiveGame(roomCode) {
     if (activeGames[roomCode] !== undefined) {
@@ -331,12 +297,12 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on('update-player-info', (socketId, name, roomCode) => {
-        idToPlayerNameMap[socketId] = name;
-        if (roomCode != "" && roomCode != undefined) {
-            sendPlayerUpdate(roomCode);
-        }
-    })
+    // socket.on('update-player-info', (socketId, name, roomCode) => {
+    //     idToPlayerNameMap[socketId] = name;
+    //     if (roomCode != "" && roomCode != undefined) {
+    //         sendPlayerUpdate(roomCode);
+    //     }
+    // })
 
     socket.on('game-over', (playerId, roomCode) => {
         endCurrentGame(roomCode);
