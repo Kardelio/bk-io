@@ -9,17 +9,17 @@ function toggleUserSettingsMenu() {
 }
 
 document.addEventListener("DOMContentLoaded", event => {
-    document.getElementById("settings-cancel-button").onclick = () => {
-        toggleUserSettingsMenu();
-    };
+    // document.getElementById("settings-cancel-button").onclick = () => {
+    //     toggleUserSettingsMenu();
+    // };
     // document.getElementById("settings-confirm-button").onclick = () => {
     //     storeChangedUserSettings();
     //     toggleUserSettingsMenu();
     // };
-    // document.getElementById("settings-logout-button").onclick = () => {
-    //     logoutTrigger();
-    //     toggleUserSettingsMenu();
-    // }
+    document.getElementById("settings-logout-button").onclick = () => {
+        logoutTrigger();
+        toggleUserSettingsMenu();
+    }
 });
 
 // function storeChangedUserSettings() {

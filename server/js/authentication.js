@@ -142,24 +142,32 @@ module.exports = function(app, io, getPlayerUsingId) {
             .then(d => {
                 if (d.length > 0) {
                     let currentUsers = d.map((line) => {
-                        return `${line.email} - ${line.verified}`
+                        return `${line.email} - ${line.verified} - ${line.username}`
                     });
                     let roomMap = io.sockets.adapter.rooms;
                     let out = [];
+                    let onlineList = [];
                     for (const [key, value] of roomMap.entries()) {
                         let userNames = [];
                         value.forEach(element => {
                             userNames.push(getPlayerUsingId(element));
                         });
-                        out.push({
-                            "room": key,
-                            "users": userNames
-                        })
+                        if (key == userNames[0].id) {
+                            onlineList.push({
+                                "user": userNames[0]
+                            })
+                        } else {
+                            out.push({
+                                "room": key,
+                                "users": userNames
+                            })
+                        }
                     }
                     response.message = `Here are all users`
                     response.data = {
                         "users": currentUsers,
-                        "rooms": out
+                        "rooms": out,
+                        "online": onlineList
                     }
                     res.status(200).json(response);
                 } else {

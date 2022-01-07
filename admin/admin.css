@@ -1,7 +1,15 @@
+.online-block {
+    background-color: lightgreen;
+    padding: 0.5em;
+    border-radius: 5px;
+    margin: 0.5em;
+}
+
 .single-room-block {
     background-color: lightcyan;
     padding: 0.5em;
     border-radius: 5px;
+    margin: 0.5em;
 }
 
 .single-room-name {
@@ -14,6 +22,55 @@
     background-color: lightgray;
     margin: 0.3em;
     padding: 0.3em;
+    display: flex;
+    flex-wrap: wrap;
 }
 
-.single-user-name {}
+.single-user-block {
+    margin: 0.3em;
+    background: white;
+    color: black;
+    padding: 0.3em;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.single-user-block-button-div {
+    text-align: center;
+}
+
+.single-user-block-email {
+    font-weight: bold;
+}
+
+.single-user-block-username {
+    font-style: italic;
+    font-size: 80%;
+}
+
+.single-user-name {
+    background: white;
+    padding: 0.5em;
+    border-radius: 5px;
+    margin: 0.5em;
+}
+
+#admin-div {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+#user-list {
+    background: gray;
+    color: white;
+    padding: 0.5em;
+    width: 20%;
+    height: 100%;
+}
+
+#room-list {
+    width: 80%;
+    height: 100%;
+    padding: 0.5em;
+}

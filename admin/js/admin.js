@@ -18,18 +18,43 @@ function displayLiveData(data) {
     data.users.forEach(user => {
         let email = user.split("-")[0].trim();
         let verified = user.split("-")[1].trim();
+        let username = user.split("-")[2].trim();
         let verifyButton = "";
         if (verified == "false") {
             verifyButton = `
-                <button onclick='verifySelectedUser("${email}")'>Verify</button>
+                <div class="single-user-block-button-div">
+                    <button onclick='verifySelectedUser("${email}")'>Verify</button>
+                </div>
             `;
         }
         usersOut += `
-            <div>${user} [${verifyButton}]</div>
+            <div class="single-user-block">
+                <div class="single-user-block-email">${email}</div>
+                <div class="single-user-block-username">${username}</div>
+                ${verifyButton}
+            </div>
         `
     });
     document.getElementById("user-list").innerHTML = usersOut;
+
     let roomsOut = "";
+
+    roomsOut += "<div class='online-block'>";
+    roomsOut += `
+        <div class='single-room-name'>
+            Online...
+        </div>
+        `;
+    roomsOut += "<div class='users-in-room'>"
+    data.online.forEach(onlineUser => {
+        roomsOut += `
+                <div class="single-user-name">
+                    ${onlineUser.user.name}
+                </div>
+        `;
+    });
+    roomsOut += "</div>";
+
     data.rooms.forEach(room => {
         let singleRoom = "<div class='single-room-block'>";
         singleRoom += `
@@ -52,6 +77,7 @@ function displayLiveData(data) {
 }
 
 function getLiveInfo() {
+    // displayLiveData(fake);
     getLive().then(d => {
         displayLiveData(d.data);
     })
