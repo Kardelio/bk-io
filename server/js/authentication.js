@@ -202,6 +202,34 @@ module.exports = function(app, io, getPlayerUsingId) {
             })
     });
 
+
+    app.get("/delete-email", authenticateAdmin, (req, res) => {
+        const response = new ApiResponse()
+
+        if (req.query.email != undefined && req.query.email != null && req.query.email.length > 0) {
+            let email = req.query.email;
+            console.log("===> Delete user with this email: " + email + "");
+
+            queryHandler.postQueryUpdate(`DELETE FROM ${process.env.PG_DB_USER_TABLE} WHERE email = '${email}';`)
+                .then(d => {
+                    if (d.rowCount > 0) {
+                        response.message = `User with email ${email} has been successfully deleted`
+                        res.status(200).json(response);
+                    } else {
+                        response.setNegativeResponse(`Could not locate & update user row`);
+                        res.status(500).json(response);
+                    }
+                })
+                .catch(e => {
+                    response.setNegativeResponse(`/register (1 - hash) Server Error: ${e}`);
+                    res.status(500).json(response);
+                })
+        } else {
+            response.setNegativeResponse(`No email address supplied`);
+            res.status(500).json(response);
+        }
+    })
+
     app.get("/verify-email", authenticateAdmin, (req, res) => {
         const response = new ApiResponse()
 

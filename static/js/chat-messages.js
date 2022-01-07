@@ -30,3 +30,7 @@ function displayMessage(message, name, fromGame = false, displayTime = true) {
     var objDiv = document.getElementById("chat-messages");
     objDiv.scrollTop = objDiv.scrollHeight;
 }
+
+function clearAllChat() {
+    document.getElementById("chat-messages").innerHTML = "";
+}

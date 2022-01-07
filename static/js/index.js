@@ -78,6 +78,7 @@ function leaveRoomUI() {
     showScreen(ROOM);
     toggleGameSelectionIconDisplay(false);
     clearPlayersInRoomList();
+    clearAllChat();
     setGameId("");
     toggleChatWindow(isCurrentlyInRoom());
     toggleLeaveRoomButton();

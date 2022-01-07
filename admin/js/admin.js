@@ -2,8 +2,22 @@ let liveDataInterval = null;
 let liveDataIntervalTime = 5000;
 
 document.addEventListener("DOMContentLoaded", event => {
+    document.getElementById("update-time").value = liveDataIntervalTime;
+
+    document.getElementById("change-update-time-button").onclick = () => {
+        let newTime = document.getElementById("update-time").value;
+        changeTimeAndRestartPing(newTime)
+    }
+
     continueToAskForLive();
 });
+
+function changeTimeAndRestartPing(timeMillis) {
+    liveDataIntervalTime = timeMillis;
+    clearInterval(liveDataInterval);
+    liveDataInterval = null;
+    continueToAskForLive();
+}
 
 function continueToAskForLive() {
     getLiveInfo();
@@ -57,18 +71,27 @@ function displayLiveData(data) {
         let email = user.split("-")[0].trim();
         let verified = user.split("-")[1].trim();
         let username = user.split("-")[2].trim();
-        let verifyButton = "";
-        if (verified == "false") {
-            verifyButton = `
+        let verifyButton = `
                 <div class="single-user-block-button-div">
-                    <button onclick='verifySelectedUser("${email}")'>Verify</button>
-                </div>
+        `;
+        verifyButton += `
+                    <button class="delete-button" onclick='deleteSelectedUser("${email}")'>Delete</button>
+                    `;
+        if (verified == "false") {
+            verifyButton += `
+                    <button class="verify-button" onclick='verifySelectedUser("${email}")'>Verify</button>
             `;
         }
+
+        verifyButton += `
+                </div>
+        `;
         usersOut += `
             <div class="single-user-block">
-                <div class="single-user-block-email">${email}</div>
-                <div class="single-user-block-username">${username}</div>
+                <div class="single-user-block-info">
+                    <span class="single-user-block-email">${email}</span>
+                    <span class="single-user-block-username">${username}</span>
+                </div>
                 ${verifyButton}
             </div>
         `
@@ -115,6 +138,7 @@ function displayLiveData(data) {
 }
 
 function getLiveInfo() {
+    // console.log("UPDATE");
     // displayLiveData(fake);
     getLive().then(d => {
         displayLiveData(d.data);
@@ -136,8 +160,29 @@ function getLive() {
     });
 }
 
+function deleteSelectedUser(userEmail) {
+    deletesUserGet(userEmail)
+        .then(d => {
+            console.log(d);
+        })
+}
+
+function deletesUserGet(email) {
+    return new Promise((res, rej) => {
+        fetch(`/delete-email?email=${email}`)
+            .then((data) => {
+                return data.json();
+            })
+            .then(d => {
+                res(d);
+            })
+            .catch((err) => {
+                rej(err.message);
+            })
+    });
+}
+
 function verifySelectedUser(userEmail) {
-    console.log(userEmail);
     verifyUserGet(userEmail)
         .then(d => {
             console.log(d);
