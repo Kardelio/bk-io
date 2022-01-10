@@ -30,6 +30,22 @@ body {
     align-items: center;
 }
 
+#settings-user-block {
+    text-align: center;
+}
+
+#settings-user-block-id {
+    font-size: 80%;
+    font-style: italic;
+    opacity: 0.5;
+}
+
+#settings-user-block-username {
+    font-weight: bold;
+    font-size: 140%;
+    margin-top: 0.5em;
+}
+
 #name-selection-div {
     display: none;
 }

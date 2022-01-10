@@ -225,6 +225,14 @@ function changeSelectedGameDataKey(tag, key, type, value) {
 }
 
 function setUserDetails(id, name) {
+    document.getElementById("settings-user-block").innerHTML = `
+        <div id="settings-user-block-id">
+            ${id} 
+        </div>
+        <div id="settings-user-block-username">
+            ${currentUserName}
+        </div> 
+    `;
     // if (/\S/.test(id)) {
     //     document.getElementById("user-id").innerHTML = `${id}`;
     // }

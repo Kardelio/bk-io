@@ -30,6 +30,12 @@ body {
     align-items: center;
 }
 
+.bkio-logo-container {}
+
+.bkio-logo {
+    width: 200px;
+}
+
 #auth-div {
     display: flex;
 }
