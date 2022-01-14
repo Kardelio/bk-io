@@ -8,9 +8,49 @@ document.addEventListener("DOMContentLoaded", event => {
         let newTime = document.getElementById("update-time").value;
         changeTimeAndRestartPing(newTime)
     }
+    document.getElementById("notice-send").onclick = () => {
+        sendNewNotice();
+    }
 
     continueToAskForLive();
+    getCurrentNotice();
 });
+
+function getCurrentNotice() {
+    noticeRequest()
+        .then(d => {
+            document.getElementById("notice-message").value = d.message;
+        })
+        .catch(err => {
+
+        })
+}
+
+function postRequestAddNotice(message) {
+
+    postNewNotice(message)
+        .then(d => {
+            if (d.status) {
+                console.log(d);
+            } else {
+                console.log(`Failed with ${JSON.stringify(d)}`);
+            }
+            // getCurrentNotice();
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
+
+function sendNewNotice() {
+    let message = document.getElementById("notice-message").value;
+
+    if (message != undefined && message != null && message.length > 0) {
+        postRequestAddNotice(message);
+    } else {
+        console.log("Nope");
+    }
+}
 
 function changeTimeAndRestartPing(timeMillis) {
     liveDataIntervalTime = timeMillis;

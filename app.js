@@ -348,6 +348,19 @@ app.get("/aabits", (req, res) => {
     res.end();
 })
 
+app.get("/current-notice", (req, res) => {
+    queryHandler.getCurrentNotice(notice => {
+        if (notice != null) {
+            res.write(JSON.stringify(notice));
+            res.end();
+        } else {
+            res.status(500).json("Failed");
+            // res.write(`${err}`);
+            // res.end();
+        }
+    })
+})
+
 app.get("/version", (req, res) => {
     try {
         let rawData = fs.readFileSync("version.json", 'utf8');

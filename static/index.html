@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/chat-box.css">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/who-is-here.css">
+    <link rel="stylesheet" href="css/notice-board.css">
     <link rel="stylesheet" href="css/settings.css">
     <link rel="stylesheet" href="css/game-selection.css">
     <link rel="stylesheet" href="css/fontawesome-all.css">
@@ -19,10 +20,12 @@
     <script src="js/chat-messages.js"></script>
     <script src="js/popup-messages.js"></script>
     <script src="/shared/js/local-storage.js"></script>
+    <script src="/shared/js/notices.js"></script>
     <script src="js/user-details.js"></script>
     <script src="js/settings.js"></script>
     <script src="js/logout.js"></script>
     <script src="js/players.js"></script>
+    <script src="js/notice-board.js"></script>
     <script src="/shared/js/version.js"></script>
     <script src="js/aabits.js"></script>
     <script src="js/game-loader.js"></script>
@@ -43,6 +46,10 @@
 
         <!-- Join or Create a room -->
         <div id="room-selection-div" class="whole-space whole-screen">
+            <div class="room-option-block" id="notice-board">
+                <div id="notice-board-time"></div>
+                <div id="notice-board-message"></div>
+            </div>
             <div class="room-option-block">
                 <div class="title">Create a NEW room</div>
                 <button id="create-room-button" class="button space-above">Create</button>

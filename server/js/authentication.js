@@ -230,6 +230,21 @@ module.exports = function(app, io, getPlayerUsingId) {
         }
     })
 
+    app.post("/add-notice", authenticateAdmin, (req, res) => {
+        const response = new ApiResponse()
+        if (req.body.message != undefined && req.body.message != null && req.body.message.length > 0) {
+            let message = req.body.message;
+            console.log(message);
+            queryHandler.addNewNotice(message, (success) => {
+                response.message = `Added Notice: ${message}`
+                res.status(200).json(response);
+            })
+        } else {
+            response.setNegativeResponse(`No message supplied`);
+            res.status(500).json(response);
+        }
+    })
+
     app.get("/verify-email", authenticateAdmin, (req, res) => {
         const response = new ApiResponse()
 

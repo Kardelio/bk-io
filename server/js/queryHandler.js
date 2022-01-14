@@ -1,6 +1,7 @@
 const res = require('express/lib/response');
 const { Client } = require('pg');
 const { User } = require('./user');
+const { Notice } = require('./notice');
 let client = null;
 
 // function connect(cb) {
@@ -93,6 +94,34 @@ function getAllUsers(cb) {
         })
 }
 
+function addNewNotice(message, cb) {
+    postQuery(`
+        INSERT INTO ${process.env.PG_DB_NOTICE_TABLE} (message) VALUES ('${message}');
+    `)
+        .then(d => {
+            cb(d);
+        }).catch(err => {
+            cb(err);
+        })
+}
+
+function getCurrentNotice(cb) {
+    postQuery(`
+        SELECT * FROM ${process.env.PG_DB_NOTICE_TABLE} ORDER BY date DESC LIMIT 1;
+    `)
+        .then(d => {
+            if (d.length > 0) {
+                console.log(d);
+                cb(new Notice(d[0].id, d[0].date, d[0].message));
+            } else {
+                cb(null);
+            }
+        }).catch(err => {
+            console.log(err);
+            cb(null);
+        })
+}
+
 function registerUser(user, cb) {
     console.log(user);
     let isAdmin = false;
@@ -141,6 +170,18 @@ function createTableForFirstTime(tableName, cb) {
             .then(d => {
                 cb(d);
             })
+    } else if (tableName === process.env.PG_DB_NOTICE_TABLE) {
+        //date DATE NOT NULL DEFAULT CURRENT_DATE,
+        postQuery(`
+        CREATE TABLE ${process.env.PG_DB_NOTICE_TABLE} (
+            ID SERIAL PRIMARY KEY,
+            date TIMESTAMP default current_timestamp,
+            message VARCHAR(3000)
+          );
+          `)
+            .then(d => {
+                cb(d);
+            })
     } else {
         console.log("NOT DOING ANYTHING");
     }
@@ -170,6 +211,7 @@ function initialiseDB() {
     connectToDB().then(out => {
         console.log(`Connection Message: ${out}`);
         setupTableFirstTime(process.env.PG_DB_USER_TABLE);
+        setupTableFirstTime(process.env.PG_DB_NOTICE_TABLE);
     })
 }
 
@@ -196,5 +238,7 @@ module.exports = {
     postQueryUpdate: postQueryUpdate,
     registerUser: registerUser,
     getAllUsers: getAllUsers,
+    addNewNotice: addNewNotice,
+    getCurrentNotice: getCurrentNotice,
     checkIfUserIsAdmin: checkIfUserIsAdmin
 };

@@ -66,13 +66,41 @@
     width: 100%;
 }
 
-#user-list {
+#user-notice-space {
     background: gray;
     color: white;
     padding: 0.5em;
     width: 25%;
-    height: 100%;
+    /* height: 100%; */
 }
+
+#user-list {
+    background: gray;
+    color: white;
+    /* padding: 0.5em; */
+    /* width: 100%; */
+    height: 80%;
+}
+
+#notice-space {
+    background: black;
+    color: white;
+    /* padding: 0.5em; */
+    /* width: 100%; */
+    height: 20%;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#notice-message {
+    width: 95%;
+    height: 80%;
+    margin: 0.5em;
+}
+
+#notice-send {}
 
 #room-list {
     width: 75%;

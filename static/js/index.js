@@ -61,6 +61,7 @@ document.addEventListener("DOMContentLoaded", event => {
         sendMessage();
     };
 
+    getNoticeBoard();
     requestGames();
     continueToAskForBits();
     askForVersionInfo();
