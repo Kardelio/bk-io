@@ -188,12 +188,14 @@ function createTableForFirstTime(tableName, cb) {
 }
 
 function connectToDB() {
+    let detailsSplit = process.env.DATABASE_URL.split("//")
+    let dbCreds = detailsSplit[1].split(":");
     client = new Client({
-        host: process.env.PG_URL,
-        port: process.env.PG_PORT,
-        user: process.env.PG_USER,
-        database: process.env.PG_DB,
-        password: process.env.PG_PASS,
+        host: dbCreds[1].split("@")[1],
+        port: dbCreds[2].split("/")[0],
+        user: dbCreds[0],
+        database: dbCreds[2].split("/")[1],
+        password: dbCreds[1].split("@")[0],
     })
     return new Promise((res, rej) => {
         client.connect(err => {
