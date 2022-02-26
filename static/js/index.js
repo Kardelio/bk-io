@@ -14,6 +14,8 @@ let knownPlayerList = [];
 let knownPlayerArray = [];
 let knownListOfGames = [];
 
+let DEBUG_GAME_TEST_LOAD_TIME = 200;
+
 document.onkeydown = function(evt) {
     evt = evt || window.event;
     var charCode = evt.key;
@@ -22,6 +24,14 @@ document.onkeydown = function(evt) {
         toggleChatWindowMinimize();
     }
 };
+
+// const params = new URLSearchParams(window.location.search);
+// let debugGame = params.get('debugGame')
+// if (debugGame) {
+//     console.log(`DEBUG GAME SELECTED, ATTEMPTING GAME ${debugGame}`);
+//     //game id checko
+//     //check
+// }
 
 // On DOM readys
 document.addEventListener("DOMContentLoaded", event => {
@@ -62,7 +72,30 @@ document.addEventListener("DOMContentLoaded", event => {
     };
 
     getNoticeBoard();
-    requestGames();
+    requestGames((games) => {
+        const params = new URLSearchParams(window.location.search);
+        let debugGame = params.get('debugGame')
+        if (debugGame) {
+            console.log(`DEBUG GAME SELECTED, ATTEMPTING GAME ${debugGame}`);
+            let theGame = games.filter(e => e.tag == debugGame);
+            if (theGame.length == 1) {
+                console.log(`Game ${debugGame} found!`);
+                requestCreateNewRoom();
+                setTimeout(() => {
+                    selectGame(theGame[0].id);
+                    setTimeout(() => {
+                        playerSelectedToJoinInWithGame(theGame[0].id);
+                        setTimeout(() => {
+                            socket.emit("start-selected-game-requested", currentRoomCode, currentSocketId);
+                            toggleGameStartDialog(false);
+                        }, DEBUG_GAME_TEST_LOAD_TIME)
+                    }, DEBUG_GAME_TEST_LOAD_TIME)
+                }, DEBUG_GAME_TEST_LOAD_TIME);
+            } else {
+                console.log(`Game ${debugGame} NOT found!`);
+            }
+        }
+    });
     continueToAskForBits();
     askForVersionInfo();
 
@@ -167,8 +200,9 @@ function toggleOfferParticipationScreen(display, gameObj) {
         document.getElementById("participate-game-which-game").innerHTML = gameObj.title;
         document.getElementById("participate-game-div").style.display = "flex";
         document.getElementById("participate-game-positive").onclick = () => {
-            socket.emit("join-game", gameObj.id, currentRoomCode, currentSocketId);
-            toggleOfferParticipationScreen(false, null);
+            // socket.emit("join-game", gameObj.id, currentRoomCode, currentSocketId);
+            // toggleOfferParticipationScreen(false, null);
+            playerSelectedToJoinInWithGame(gameObj.id);
         }
         document.getElementById("participate-game-negative").onclick = () => {
             toggleOfferParticipationScreen(false, null);
@@ -176,6 +210,11 @@ function toggleOfferParticipationScreen(display, gameObj) {
     } else {
         document.getElementById("participate-game-div").style.display = "none";
     }
+}
+
+function playerSelectedToJoinInWithGame(gameId) {
+    socket.emit("join-game", gameId, currentRoomCode, currentSocketId);
+    toggleOfferParticipationScreen(false, null);
 }
 
 function toggleGameStartDialog(display) {

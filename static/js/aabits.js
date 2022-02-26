@@ -33,21 +33,24 @@ function aaBitsCurl() {
 }
 
 function displayAABits(bits) {
-    bits.sort((a, b) => {
-        return parseFloat(a.amount) - parseFloat(b.amount);
-    });
-    bits.reverse();
-    const shorterBits = bits.slice(0, 12);
+    if (bits != null) {
 
-    let out = "";
+        bits.sort((a, b) => {
+            return parseFloat(a.amount) - parseFloat(b.amount);
+        });
+        bits.reverse();
+        const shorterBits = bits.slice(0, 12);
 
-    shorterBits.forEach((single, index) => {
-        out += `
+        let out = "";
+
+        shorterBits.forEach((single, index) => {
+            out += `
             <div class="single-bits-row ${index % 2 == 0 ? "row-even" : "row-odd"}">
                 <div class="single-bits-row-name">${single.name}</div>
                 <div class="single-bits-row-amount">${single.amount}</div>
             </div>
         `;
-    });
-    document.getElementById("aabits-div").innerHTML = out;
+        });
+        document.getElementById("aabits-div").innerHTML = out;
+    }
 }

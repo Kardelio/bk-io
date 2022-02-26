@@ -29,13 +29,16 @@ export default function() {
  */
 function setup() {
     console.log(`GAME-CLIENT: ${GAME_TAG} -> Setup`);
+    // var script = document.createElement("script"); // create a script DOM node
+    // script.src = `${GAME_TAG}/cardTags.js`; // set its src to the provided URL
+    // import (`/${GAME_TAG}/cardTags.js`).then(module => {
+    //     console.log(module);
+    //     // module.hello('world');
+    // });
+
+    // document.head.appendChild(script); // add it to the end of the head section of the page (could change 'head' to 'body' to add it to the end of the body section instead)
     //KEEP IN MIND SPECTATORS CAN SEE
     getGameSpace().innerHTML = `
-        <div class="simple-row-container">
-            <img src="/${GAME_TAG}/media/rock.png" style="width: 100px; height: 100px;">
-            <img src="/${GAME_TAG}/media/paper.png" style="width: 100px; height: 100px;">
-            <img src="/${GAME_TAG}/media/scissors.png" style="width: 100px; height: 100px;">
-        </div>
     `;
 }
 
@@ -52,17 +55,14 @@ export function takeExit() {
     socket.emit(`${GAME_TAG}-take-top-exit-card`, currentSocketId, currentRoomCode);
 }
 
-export function exampleFunctionToBeUsedByDOM(which) {
-    yourCurrentSelection = which;
-    /**
-     * IMPORTANT:
-     * This is an example server socket emission!
-     * Tell the server information using lines like this...
-     * You should not control or deal with game logic in this file.
-     * THE SERVER should deal with and hold game logic
-     * you should only send user input to the server, this is an example of that...
-     */
-    socket.emit(`${GAME_TAG}-example`, currentSocketId, currentRoomCode, which);
+export function selectOfferedChoice(choiceId) {
+    console.log(choiceId);
+    socket.emit(`${GAME_TAG}-take-selected-choice-id`, currentSocketId, currentRoomCode, choiceId);
+}
+
+export function pickPlayer(playerId) {
+    console.log(playerId);
+    socket.emit(`${GAME_TAG}-player-selected-for-switch`, currentSocketId, currentRoomCode, playerId);
 }
 
 /**
@@ -72,73 +72,41 @@ export function exampleFunctionToBeUsedByDOM(which) {
  * and interact with...
  */
 function renderGameState(state) {
-    // getGameSpace().innerHTML = `
-    //     <div id='${GAME_TAG}-heads'><img src="${GAME_TAG}/media/coin-heads.png" style="width: 100px; height: 100px;"></div>
-    //     <div id='${GAME_TAG}-tails'><img src="${GAME_TAG}/media/coin-tails.png" style="width: 100px; height: 100px;"></div>
-    //     <div id='${GAME_TAG}-coin-buttons' class='${GAME_TAG}-buttons-div'></div>
-    //     <div id='${GAME_TAG}-score'></div>
-    // `;
-
-    // if (state.players[state.currentPlayerIndex] == currentSocketId) {
-    //     document.getElementById(`${GAME_TAG}-coin-buttons`).innerHTML = `
-    //     <button onclick='mapOfGames["${GAME_TAG}"].flipit("heads")'>heads</button>
-    //     <button onclick='mapOfGames["${GAME_TAG}"].flipit("tails")'>tails</button>
-    // `;
-    // } else {
-    //     document.getElementById(`${GAME_TAG}-coin-buttons`).innerHTML = ``;
-    // }
-
-    // let scoreOut = "";
-    // for (const [key, value] of Object.entries(state.score)) {
-    //     console.log(`${key}: ${value}`);
-    //     scoreOut += `
-    //         <div>${getPlayerInfomation(key).name} -> ${value}</div>
-    //     `;
-    // }
-    // document.getElementById(`${GAME_TAG}-score`).innerHTML = scoreOut;
-
-    // if (state.coinResult == "heads") {
-    //     document.getElementById(`${GAME_TAG}-heads`).style.display = "block";
-    //     document.getElementById(`${GAME_TAG}-tails`).style.display = "none";
-    // } else if (state.coinResult == "tails") {
-    //     document.getElementById(`${GAME_TAG}-heads`).style.display = "none";
-    //     document.getElementById(`${GAME_TAG}-tails`).style.display = "block";
-    // } else {
-    //     document.getElementById(`${GAME_TAG}-heads`).style.display = "none";
-    //     document.getElementById(`${GAME_TAG}-tails`).style.display = "none";
-    // }
-
-    // document.getElementById(`${GAME_TAG}-coin`).innerHTML = JSON.stringify(state);
-    /**
-     * Render and draw the current game state.
-     * IMPORTANT: the state object should dictate what
-     * and how is being drawn, do NOT let your UI hold it's own state
-     */
     console.log(state);
-    // getGameSpace().innerHTML = `
-    //     <div class="${GAME_TAG}-game-container">
-    //         Game UI Here...
-    //     </div>
-    //     ${displayScore(state)}
-    // `;
     let display = "";
 
+    display += renderRoundNumber(state);
     display += renderGameMap(state);
-    display += renderCaveDeckTopCard(state);
-    if (state.players[state.currentPlayerIndex] == currentSocketId) {
-        display += `
-        <button onclick='mapOfGames["${GAME_TAG}"].takeTop()'>top</button>
-        <button onclick='mapOfGames["${GAME_TAG}"].takeExit()'>exit</button>
-    `;
+    if (state.choiceMode == "card" && state.choices != null) {
+
+        display += renderAdditionalOptionsBlock(state, state.players[state.currentPlayerIndex] == currentSocketId);
+    } else if (state.choiceMode == "players") {
+
+        display += renderAdditionalOptionsBlock(state, state.players[state.currentPlayerIndex] == currentSocketId);
     } else {
-        display += `nah`;
+        display += renderCaveDeckTopCard(state, state.players[state.currentPlayerIndex] == currentSocketId);
+        display += renderExitCardDeck(state.players[state.currentPlayerIndex] == currentSocketId);
     }
-    display += displayLog(state);
+    display += displayGemCountAndLog(state);
     getGameSpace().innerHTML = display;
+    var logDiv = document.getElementById(`${GAME_TAG}-log-container`);
+    logDiv.scrollTop = logDiv.scrollHeight;
 }
 
-function displayLog(state) {
-    let out = `<div class="${GAME_TAG}-log-container">`;
+function displayGemCountAndLog(state) {
+    let out = `<div id="${GAME_TAG}-stat-container">`;
+    out += `<div id="${GAME_TAG}-gem-container">`;
+    state.game.playerList.forEach(player => {
+        let gems = (state.game.gems[player] === undefined) ? 0 : state.game.gems[player];
+        let gold = (state.game.nuggets[player] === undefined) ? 0 : state.game.nuggets[player];
+        out += `
+        <div class="${GAME_TAG}-gem-line">
+            <span class="${GAME_TAG}-gem-line-name">${getPlayerInfomation(player).name}</span> : <img src="/${GAME_TAG}/media/gem.png" class="${GAME_TAG}-gem" style="width: 1.5em;"> x ${gems} : <img src="/${GAME_TAG}/media/gold.png" class="${GAME_TAG}-gem" style="width: 1.5em;"> x ${gold}
+        </div>
+        `;
+    });
+    out += `</div>`;
+    out += `<div id="${GAME_TAG}-log-container">`;
     state.log.forEach(element => {
         out += `
         <div class="${GAME_TAG}-log-line">
@@ -147,34 +115,128 @@ function displayLog(state) {
         `;
     });
     out += `</div>`;
+    out += `</div>`;
+    return out;
+}
+
+function renderRoundNumber(state) {
+    let out = "";
+    out += `
+        <div>Round: ${state.game.roundNumber}</div>
+    `
     return out;
 }
 
 function renderGameMap(state) {
     let m = state.game.map;
+    let deadPlayers = state.game.dead;
+    let safePlayers = state.game.safe;
     let out = "<div>";
-    for (let index = 0; index < m.length; index++) {
-        out += `[ `;
-        const cell = m[index];
-        if (cell.length > 0) {
-            cell.forEach(id => {
-                out += ` ${getPlayerInfomation(id).name} `;
-            });
-        }
-        if (index == state.game.dragonIndex) {
-            out += ` -D- `;
-        }
-        out += ` ]`;
+
+    out += `<div class="${GAME_TAG}-cave-section">`;
+    out += `<div class="${GAME_TAG}-exit-section">`;
+    for (let index = 0; index < safePlayers.length; index++) {
+        out += `<div class="${GAME_TAG}-player-name ${GAME_TAG}-player-safe-state">${getPlayerInfomation(safePlayers[index]).name}</div>`;
     }
+    out += `</div>`;
+    for (let index = 0; index < m.length; index++) {
+        out += `<div class="${GAME_TAG}-cave-section-inner">`;
+        if (index == state.game.dragonIndex) {
+            out += `<div class="${GAME_TAG}-dragon"></div>`;
+        } else {
+            const cell = m[index];
+            if (cell.length > 0) {
+                cell.forEach(id => {
+                    out += `<div class="${GAME_TAG}-player-name">${getPlayerInfomation(id).name}</div>`;
+                });
+            }
+        }
+        out += `</div>`;
+    }
+    out += `<div class="${GAME_TAG}-dead-section">`;
+    for (let index = 0; index < deadPlayers.length; index++) {
+        out += `<div class="${GAME_TAG}-player-name ${GAME_TAG}-player-dead-state">${getPlayerInfomation(deadPlayers[index]).name}</div>`;
+    }
+    out += "</div>";
+    out += `</div>`;
+
+
     out += "</div>";
     return out;
 }
 
-function renderCaveDeckTopCard(state) {
+function renderAdditionalOptionsBlock(state, isActive) {
     let out = "";
+    if (isActive) {
+        if (state.choiceMode == "card" && state.choices != null) {
+            state.choices.forEach((choice, indx) => {
+                out += `
+                <button class="${GAME_TAG}-option-card" onclick='mapOfGames["${GAME_TAG}"].selectOfferedChoice("${indx}")'>${choice}</button>
+                `;
+            });
+        } else if (state.choiceMode == "players") {
+            state.players.forEach((choice, indx) => {
+                out += `
+                <button class="${GAME_TAG}-option-card" onclick='mapOfGames["${GAME_TAG}"].pickPlayer("${choice}")'>${getPlayerInfomation(choice).name}</button>
+                `;
+            });
+        } else {
+            // display += `
+            //     <button onclick='mapOfGames["${GAME_TAG}"].takeTop()'>top</button>
+            //     <button onclick='mapOfGames["${GAME_TAG}"].takeExit()'>exit</button>
+            // `;
+        }
+    }
+    return out;
+}
+
+function renderExitCardDeck(isActive) {
+    let out = "";
+    if (isActive) {
+        out += `<div class="${GAME_TAG}-top-card-active ${GAME_TAG}-card" onclick='mapOfGames["${GAME_TAG}"].takeExit()'>`
+    } else {
+        out += `<div class="${GAME_TAG}-top-card ${GAME_TAG}-card">`
+    }
     out += `
-        <div>${state.topCaveCard.name}</div>
-    `
+            Exit Card
+        `
+    out += `</div>`
+    return out;
+}
+
+function renderCaveDeckTopCard(state, isActive) {
+    let out = "";
+    if (isActive) {
+        out += `<div class="${GAME_TAG}-top-card-active ${GAME_TAG}-card" onclick='mapOfGames["${GAME_TAG}"].takeTop()'>`
+    } else {
+        out += `<div class="${GAME_TAG}-top-card ${GAME_TAG}-card">`
+    }
+    switch (state.topCaveCard.tag) {
+        case "one":
+            out += `
+                <img src="/${GAME_TAG}/media/gem.png" class="${GAME_TAG}-gem">
+            `
+            break;
+        case "one-out":
+            out += `
+                <img src="/${GAME_TAG}/media/gem.png" class="${GAME_TAG}-gem">
+                <img src="/${GAME_TAG}/media/arrow.png" class="${GAME_TAG}-arrow-out">
+            `
+            break;
+        case "closer":
+            out += `
+                <img src="/${GAME_TAG}/media/gem.png" class="${GAME_TAG}-gem">
+                <img src="/${GAME_TAG}/media/gem.png" class="${GAME_TAG}-gem">
+                <img src="/${GAME_TAG}/media/arrow.png" class="${GAME_TAG}-arrow-closer">
+            `
+            break;
+        default:
+            out += `
+                ${state.topCaveCard.name}
+            `
+            break;
+    }
+    out += `</div>`
     return out;
 }
 
@@ -212,6 +274,28 @@ function renderEndGameState(state) {
     getGameSpace().innerHTML = ``;
 }
 
+// function displayChoiceWindow(choices) {
+//     console.log(choices);
+
+//     let popup = document.createElement("div");
+//     popup.className = "my-mine-choice-popup";
+//     let id = Id(); //Id function from utils
+//     popup.id = id;
+//     let out = "";
+//     choices.forEach((choice, indx) => {
+//         out += `
+//             <button onclick='mapOfGames["${GAME_TAG}"].selectOfferedChoice("${indx}", "${id}")'>${choice}</button>
+//         `
+//     });
+//     popup.innerHTML = `<div class="my-mine-choice-popup-inner">${out}</div>`;
+//     getGameSpace().appendChild(popup);
+// }
+
+socket.on(`${GAME_TAG}-choice-exit-card`, (choices) => {
+    console.log("CHOICE COMMING");
+    displayChoiceWindow(choices)
+        //TODO displya choice window
+})
 
 /**
  * BELOW -> 3x Socket Functions

@@ -38,7 +38,7 @@ module.exports = (allGameStateHolder, roomCode) => {
         caveCardsDeck.push(
             new Card.Card(
                 "Closer",
-                "closer",
+                CardTags.TWO_GEM_CLOSER,
                 countForId,
                 (player) => {
                     allGameStateHolder[roomCode]["private"]["gameMap"].collectGems(player, 2);
@@ -52,7 +52,7 @@ module.exports = (allGameStateHolder, roomCode) => {
         caveCardsDeck.push(
             new Card.Card(
                 "One Gem",
-                "one",
+                CardTags.ONE_GEM_STAY,
                 countForId,
                 (player) => {
                     allGameStateHolder[roomCode]["private"]["gameMap"].collectGems(player, 1);
@@ -65,7 +65,7 @@ module.exports = (allGameStateHolder, roomCode) => {
         caveCardsDeck.push(
             new Card.Card(
                 "One and Out",
-                "one-out",
+                CardTags.ONE_GEM_EXIT,
                 countForId,
                 (player) => {
                     allGameStateHolder[roomCode]["private"]["gameMap"].collectGems(player, 1);

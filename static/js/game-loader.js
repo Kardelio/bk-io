@@ -43,18 +43,21 @@ function updateCurrentGameWaitingToStartInfo() {
     if (currentSelectedGame != null) {
         let count = knownPlayerArray.filter(p => p.inGame == true).length;
         document.getElementById("start-game-dialog-text").innerHTML = `
-            <div>${count}/${currentSelectedGame.max_players}</div>
+            <div>
+                ${count}/${currentSelectedGame.max_players}
+            </div>
         `;
     }
 }
 
-function requestGames() {
+function requestGames(cb) {
     gamesCurl()
         .then(d => {
             console.log(d);
             if (d.status) {
                 storeGames(d.data);
                 loadGameModules(d.data);
+                cb(d.data);
             } else {
                 console.log(d.reason);
             }

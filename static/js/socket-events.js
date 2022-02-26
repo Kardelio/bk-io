@@ -1,12 +1,14 @@
 const hostname = window.location.hostname;
 var socket = null
     // if (params["debug"] == 'true') {
-if (hostname == 'localhost') {
+if (hostname == 'localhost' || hostname.startsWith("192.168")) {
     /**
      * For local testing you need to change this url to match your local IP address...
      */
     // socket = io('http://192.168.2.105:3000/');
     // socket = io('http://192.168.0.32:3000/');
+    // socket = io('http://192.168.178.39:3000/');
+    // socket = io('http://192.168.0.38:3000/');
     socket = io('http://192.168.178.39:3000/');
     console.log("IS RUNNING IN DEBUG");
 } else {

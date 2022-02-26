@@ -95,25 +95,35 @@ function playerPullsCaveCard(roomCode, playerId) {
     let topCard = allGameStateHolder[roomCode]["private"]["caveCards"].shift();
     console.log(topCard);
     allGameStateHolder[roomCode]["private"]["gameMap"].movePlayerWithCaveCard(playerId, topCard)
-    addItemToLog(roomCode, `${getPlayerInfoFromIdFunc(playerId).name} picked up the card: ${topCard.name}`);
+    addItemToLog(roomCode, `<div class="${GAME_TAG}-log-player-name">${getPlayerInfoFromIdFunc(playerId).name}</div> picked up the card: ${topCard.name}`);
     checkTopCard(roomCode, playerId);
 }
 
 function playerPullsExitCard(roomCode, playerId) {
     if (allGameStateHolder[roomCode]["private"]["exitCards"].length > 0) {
         let topCard = allGameStateHolder[roomCode]["private"]["exitCards"].shift();
-        //TODO pick option
-        allGameStateHolder[roomCode]["private"]["gameMap"].triggerExitCard(playerId, topCard, "1")
-        addItemToLog(roomCode, `${getPlayerInfoFromIdFunc(playerId).name} picked up the EXIT card: ${topCard.name}`);
+        // TODO pick option
+        if (Object.entries(topCard.triggerOptions).length > 1) {
+            console.log("MORE THAN ONE OOPTIOSN");
+            console.log(topCard);
+            return topCard;
+        } else {
+            //WORKS
+            allGameStateHolder[roomCode]["private"]["gameMap"].triggerExitCard(playerId, topCard, 0)
+            addItemToLog(roomCode, `<div class="${GAME_TAG}-log-player-name">${getPlayerInfoFromIdFunc(playerId).name}</div> picked up the EXIT card: ${topCard.name}`);
+            return null;
+        }
+        // allGameStateHolder[roomCode]["private"]["gameMap"].triggerExitCard(playerId, topCard, 1)
+        // addItemToLog(roomCode, `${getPlayerInfoFromIdFunc(playerId).name} picked up the EXIT card: ${topCard.name}`);
     } else {
         console.log("Restocking exit deck");
         restockExitCardsDeck(roomCode);
-        playerPullsExitCard(roomCode, playerId);
+        return playerPullsExitCard(roomCode, playerId);
     }
 }
 
-function playerTriggerSpecificExitCardOption(roomCode, playerId, option) {
-    allGameStateHolder[roomCode]["private"]["gameMap"].triggerExitCard(playerId, topCard, "1")
+function playerTriggerSpecificExitCardOption(roomCode, playerId, choices, option) {
+    allGameStateHolder[roomCode]["private"]["gameMap"].triggerExitCard(playerId, choices, option)
 }
 
 function checkTopCard(roomCode, playerId) {
@@ -167,71 +177,161 @@ function setup(app, io, getGameData, getPlayerInfoFromId) {
 
         socket.on(`${GAME_TAG}-take-top-cave-card`, (socketId, roomCode) => {
             playerPullsCaveCard(roomCode, socketId);
-            let nextPlayerIndex = getNextPlayerId(roomCode);
+            let nextPlayerIndex = getNextPlayerId(roomCode, getGameData(GAME_TAG, roomCode));
             allGameStateHolder[roomCode]["public"].currentPlayerIndex = nextPlayerIndex;
+            allGameStateHolder[roomCode]["public"].choiceMode = null;
+            allGameStateHolder[roomCode]["public"].choices = null;
+            allGameStateHolder[roomCode]["private"].currentPlayerChoices = null;
             updateGame(io, roomCode);
         })
 
-        socket.on(`${GAME_TAG}-exit-option-chossen`, (socketId, roomCode, switchingPlayerId) => {
-            // playerPullsExitCard(roomCode, socketId);
-            // let nextPlayerIndex = getNextPlayerId(roomCode);
-            // allGameStateHolder[roomCode]["public"].currentPlayerIndex = nextPlayerIndex;
-            // updateGame(io, roomCode);
+        socket.on(`${GAME_TAG}-take-selected-choice-id`, (socketId, roomCode, choiceId) => {
+            console.log(`choice was elected :${choiceId}`);
+            console.log(allGameStateHolder[roomCode]["private"].currentPlayerChoices);
+            let specificChoice = allGameStateHolder[roomCode]["private"].currentPlayerChoices.triggerOptions[choiceId];
+            if (specificChoice.id == "switch") {
+                allGameStateHolder[roomCode]["public"].choices = null;
+                allGameStateHolder[roomCode]["public"].choiceMode = "players";
+                allGameStateHolder[roomCode]["private"].currentPlayerChoices = null;
+                updateGame(io, roomCode);
+            } else {
+                allGameStateHolder[roomCode]["private"]["gameMap"].triggerExitCard(socketId, allGameStateHolder[roomCode]["private"].currentPlayerChoices, choiceId)
+                addItemToLog(roomCode, `<div class="${GAME_TAG}-log-player-name">${getPlayerInfoFromIdFunc(socketId).name}</div> picked up the EXIT card: ${allGameStateHolder[roomCode]["private"].currentPlayerChoices.name}`);
+                addItemToLog(roomCode, `<div class="${GAME_TAG}-log-player-name">${getPlayerInfoFromIdFunc(socketId).name}</div> chose to perform ${allGameStateHolder[roomCode]["private"].currentPlayerChoices.triggerOptions[choiceId].description}`);
+                let nextPlayerIndex = getNextPlayerId(roomCode, getGameData(GAME_TAG, roomCode));
+                allGameStateHolder[roomCode]["public"].currentPlayerIndex = nextPlayerIndex;
+                allGameStateHolder[roomCode]["public"].choices = null;
+                allGameStateHolder[roomCode]["public"].choiceMode = null;
+                allGameStateHolder[roomCode]["private"].currentPlayerChoices = null;
+                updateGame(io, roomCode);
+            }
         })
-        socket.on(`${GAME_TAG}-exit-option-switch-selection`, (socketId, roomCode, switchingPlayerId) => {
-            // playerPullsExitCard(roomCode, socketId);
-            // let nextPlayerIndex = getNextPlayerId(roomCode);
-            // allGameStateHolder[roomCode]["public"].currentPlayerIndex = nextPlayerIndex;
-            // updateGame(io, roomCode);
+
+        socket.on(`${GAME_TAG}-player-selected-for-switch`, (socketId, roomCode, playerSelectedId) => {
+            console.log(`selcted :${playerSelectedId}`);
+            allGameStateHolder[roomCode]["private"]["gameMap"].switchTwoPlayersPositions(socketId, playerSelectedId);
+            addItemToLog(roomCode, `<div class="${GAME_TAG}-log-player-name">${getPlayerInfoFromIdFunc(socketId).name}</div> picked up the EXIT card AND switched with ${getPlayerInfoFromIdFunc(playerSelectedId).name}`);
+            let nextPlayerIndex = getNextPlayerId(roomCode, getGameData(GAME_TAG, roomCode));
+            allGameStateHolder[roomCode]["public"].currentPlayerIndex = nextPlayerIndex;
+            allGameStateHolder[roomCode]["public"].choices = null;
+            allGameStateHolder[roomCode]["public"].choiceMode = null;
+            allGameStateHolder[roomCode]["private"].currentPlayerChoices = null;
+            updateGame(io, roomCode);
         })
 
         socket.on(`${GAME_TAG}-take-top-exit-card`, (socketId, roomCode) => {
-            playerPullsExitCard(roomCode, socketId);
-            let nextPlayerIndex = getNextPlayerId(roomCode);
-            allGameStateHolder[roomCode]["public"].currentPlayerIndex = nextPlayerIndex;
-            updateGame(io, roomCode);
-        })
-
-        socket.on(`${GAME_TAG}-example`, (socketId, roomCode, rps) => {
-            // allGameStateHolder[roomCode].private[`${socketId}`] = rps;
-            // allGameStateHolder[roomCode].public.players_selected_choice.push(socketId);
-            // if (allGameStateHolder[roomCode].public.players_selected_choice.length == 2) {
-            //     let p1 = allGameStateHolder[roomCode].public["players"][0];
-            //     let p2 = allGameStateHolder[roomCode].public["players"][1];
-            //     let p1Choice = allGameStateHolder[roomCode].private[p1];
-            //     let p2Choice = allGameStateHolder[roomCode].private[p2];
-            //     if (p1Choice == p2Choice) {
-            //         allGameStateHolder[roomCode].public["log"].push(`${getPlayerInfoFromId(p1).name} picked ${p1Choice}, ${getPlayerInfoFromId(p2).name} picked ${p2Choice} - DRAW`)
-            //     } else {
-            //         if (rpsWinningCombo[p1Choice] == p2Choice) {
-            //             allGameStateHolder[roomCode].public["log"].push(`${getPlayerInfoFromId(p1).name} picked ${p1Choice}, ${getPlayerInfoFromId(p2).name} picked ${p2Choice} - ${getPlayerInfoFromId(p1).name} gets a point`)
-            //             increasePlayerScore(p1, roomCode, 1);
-            //         } else {
-            //             allGameStateHolder[roomCode].public["log"].push(`${getPlayerInfoFromId(p1).name} picked ${p1Choice}, ${getPlayerInfoFromId(p2).name} picked ${p2Choice} - ${getPlayerInfoFromId(p2).name} gets a point`)
-            //             increasePlayerScore(p2, roomCode, 1);
-            //         }
-            //     }
-
-            //     if (isGameOver(roomCode, getGameData(GAME_TAG, roomCode))) {
-            //         endGame(io, roomCode);
-            //     } else {
-            //         allGameStateHolder[roomCode].public.players_selected_choice = [];
-            //         updateGame(io, roomCode);
-            //     }
-            // } else {
-            //     updateGame(io, roomCode);
-            // }
+            let currentTopCard = playerPullsExitCard(roomCode, socketId);
+            console.log(currentTopCard);
+            if (currentTopCard == null) {
+                //no choice needed to make
+                let nextPlayerIndex = getNextPlayerId(roomCode, getGameData(GAME_TAG, roomCode));
+                allGameStateHolder[roomCode]["public"].currentPlayerIndex = nextPlayerIndex;
+                allGameStateHolder[roomCode]["public"].choiceMode = null;
+                allGameStateHolder[roomCode]["public"].choices = null;
+                allGameStateHolder[roomCode]["private"].currentPlayerChoices = null;
+                updateGame(io, roomCode);
+            } else {
+                let cleanChoices = currentTopCard.triggerOptions.map(e => e.description)
+                allGameStateHolder[roomCode]["public"].choiceMode = "card";
+                allGameStateHolder[roomCode]["public"].choices = cleanChoices;
+                allGameStateHolder[roomCode]["private"].currentPlayerChoices = currentTopCard;
+                updateGame(io, roomCode);
+            }
         })
     });
 }
 
-function getNextPlayerId(roomCode) {
-    let newIndex = allGameStateHolder[roomCode]["public"].currentPlayerIndex;
-    newIndex = newIndex + 1;
-    if (allGameStateHolder[roomCode]["public"].players[newIndex] != undefined) {
-        return newIndex;
+// function offerPlayerChoice(io, roomCode, playerId, choices) {
+//     let cleanChoices = choices.map(e => e.description)
+//     io.to(playerId).emit(`${GAME_TAG}-choice-exit-card`, cleanChoices);
+// }
+
+function triggerEndOfRound(roomCode, maxRounds) {
+    //give nuggets to top 3
+    //reset cards
+    //reset dragon
+    //rest positions
+
+    if (allGameStateHolder[roomCode]["private"]["gameMap"].roundNumber >= maxRounds) {
+        //Calcucate final scores 
+        // including gold nuggs
+        // pass off controll
+        console.log("END GAME");
+        addItemToLog(roomCode, `GAME OVER`);
     } else {
-        return 0;
+        allGameStateHolder[roomCode]["private"]["gameMap"].increaseRoundNumber();
+        allGameStateHolder[roomCode]["private"]["gameMap"].setupForNewRound(maxRounds);
+        restockExitCardsDeck(roomCode);
+        restockCaveCardsDeck(roomCode);
+        checkTopCard(roomCode, null);
+        // setNextPlayerStartOfRound(roomCode, allGameStateHolder[roomCode]["private"]["gameMap"].lastRoundWinnerId);
+
+        // for (const [key, value] of Object.entries(allGameStateHolder[roomCode]["private"]["gameMap"].nuggets)) {
+        //     addItemToLog(roomCode, `${getPlayerInfoFromIdFunc(key).name} has ${value} nuggets`);
+        // }
+        /**
+         * He who won that last round starts
+         */
+
+        addItemToLog(roomCode, `--- Round ${allGameStateHolder[roomCode]["private"]["gameMap"].roundNumber} Starting ---`);
+        // allGameStateHolder[roomCode]["public"].choiceMode = null;
+        // allGameStateHolder[roomCode]["public"].choices = null;
+        // allGameStateHolder[roomCode]["private"].currentPlayerChoices = null;
+        // updateGame(io, roomCode);
+
+        // allGameStateHolder[roomCode]["public"] = createStartGameState(Utils.getRandomNumberInclusive(0, players.length - 1), players);
+        // // allGameStateHolder[roomCode] = createStartGameState(getRandomNumberInclusive(0, players.length - 1), players);
+        // updateGameStateObject(roomCode);
+        // console.log(`===> OBJECT: ${JSON.stringify(allGameStateHolder[roomCode])}`);
+        // io.to(roomCode).emit(`${GAME_TAG}-start`, allGameStateHolder[roomCode]["public"]);
+    }
+
+}
+
+function getNextPlayerId(roomCode, gameDataObj) {
+    let safe = allGameStateHolder[roomCode]["private"].gameMap.getListOfSafePlayers();
+    let dead = allGameStateHolder[roomCode]["private"].gameMap.getListOfDeadPlayers();
+    let remainingPlayers = allGameStateHolder[roomCode]["public"].players;
+    remainingPlayers = remainingPlayers.filter(function(el) {
+        return !safe.includes(el) && !dead.includes(el);
+    });
+    if (remainingPlayers.length > 0) {
+        let newIndex = allGameStateHolder[roomCode]["public"].currentPlayerIndex;
+        newIndex = newIndex + 1;
+        return iterativeGetNextPlayer(roomCode, newIndex, remainingPlayers);
+    } else {
+        //round over
+        triggerEndOfRound(roomCode, gameDataObj.rounds.value);
+    }
+    /*
+                    allGameStateHolder[roomCode]["public"].currentPlayerIndex = nextPlayerIndex;
+                allGameStateHolder[roomCode]["public"].choiceMode = null;
+                allGameStateHolder[roomCode]["public"].choices = null;
+                allGameStateHolder[roomCode]["private"].currentPlayerChoices = null;
+    */
+}
+
+function setNextPlayerStartOfRound(roomCode, winnerId) {
+    console.log(`last round player winner: ${winnerId}`);
+    allGameStateHolder[roomCode]["public"].currentPlayerIndex = winnerId;
+    // allGameStateHolder[roomCode]["public"].currentPlayerIndex = nextPlayerIndex;
+}
+
+function iterativeGetNextPlayer(roomCode, currentNextIndex, currentRemainingPlayers) {
+    if (allGameStateHolder[roomCode]["public"].players[currentNextIndex] != undefined) {
+        console.log("REMAINGIN PLAYERS");
+        console.log(currentRemainingPlayers);
+        if (currentRemainingPlayers.includes(allGameStateHolder[roomCode]["public"].players[currentNextIndex])) {
+            return currentNextIndex
+        } else {
+            return iterativeGetNextPlayer(roomCode, currentNextIndex++, currentRemainingPlayers);
+        }
+    } else {
+        if (currentRemainingPlayers.includes(allGameStateHolder[roomCode]["public"].players[0])) {
+            return 0
+        } else {
+            return iterativeGetNextPlayer(roomCode, 1, currentRemainingPlayers);
+        }
     }
 }
 
@@ -263,9 +363,14 @@ function startGame(io, roomCode, players) {
 
     allGameStateHolder[roomCode]["public"] = createStartGameState(Utils.getRandomNumberInclusive(0, players.length - 1), players);
     // allGameStateHolder[roomCode] = createStartGameState(getRandomNumberInclusive(0, players.length - 1), players);
+    addItemToLog(roomCode, `--- The Game has Begun! ---`);
     updateGameStateObject(roomCode);
     console.log(`===> OBJECT: ${JSON.stringify(allGameStateHolder[roomCode])}`);
     io.to(roomCode).emit(`${GAME_TAG}-start`, allGameStateHolder[roomCode]["public"]);
+}
+
+function startNewRound(roomCode) {
+
 }
 
 function endGame(io, roomCode) {
@@ -311,6 +416,7 @@ function createStartGameState(currentPlayerIndex, players) {
         "log": [],
         "currentPlayerIndex": currentPlayerIndex,
         "game": {},
+        "choices": null,
         "players": players,
         "score": {}
     }

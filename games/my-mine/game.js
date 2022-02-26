@@ -1,14 +1,17 @@
 class GameMap {
     constructor(numberOfPlaces, players) {
         this.numberOfPlaces = numberOfPlaces
+        this.roundNumber = 1;
         this.gems = {}
         this.map = Array(this.numberOfPlaces).fill(Array());
         this.safe = Array();
         this.dead = Array();
+        this.nuggets = {}
+        this.lastRoundWinnerId = null;
         this.dragonIndex = this.numberOfPlaces;
         this.playerList = players;
         players.forEach(player => {
-            this.addPlayerToGame(player);
+            this.setPlayerToStartCell(player);
         });
         this.printGameStatus();
         // this.moveAllPlayers(-2);
@@ -57,23 +60,31 @@ class GameMap {
     }
 
     switchTwoPlayersPositions(playerA, playerB) {
-        let playerACell = this.findCellOfPlayer(playerA)
-        let playerBCell = this.findCellOfPlayer(playerB)
-        this.removePlayerFromCell(playerA, playerACell)
-        this.removePlayerFromCell(playerB, playerBCell)
-        this.putPlayerInCell(playerA, playerBCell)
-        this.putPlayerInCell(playerB, playerACell)
-        this.printGameStatus();
+        if (playerA != playerB) {
+            let playerACell = this.findCellOfPlayer(playerA)
+            let playerBCell = this.findCellOfPlayer(playerB)
+            this.removePlayerFromCell(playerA, playerACell)
+            this.removePlayerFromCell(playerB, playerBCell)
+            this.putPlayerInCell(playerA, playerBCell)
+            this.putPlayerInCell(playerB, playerACell)
+            this.printGameStatus();
+        } else {
+            console.log(`PlayerA ${playerA} is the SAME as PlayerB ${playerB}`);
+        }
     }
 
     getPlayersInCell(cellId) {
         return this.map[cellId];
     }
 
-    addPlayerToGame(playerId) {
+    setPlayerToStartCell(playerId) {
+        this.putPlayerInCell(playerId, this.getStartingCellIndex());
+    }
+
+    getStartingCellIndex() {
         let startingSpace = Math.round(this.numberOfPlaces / 2);
         let startingSpaceIndex = startingSpace - 1;
-        this.putPlayerInCell(playerId, startingSpaceIndex);
+        return startingSpaceIndex
     }
 
     putPlayerInCell(playerId, cellId) {
@@ -96,6 +107,14 @@ class GameMap {
         this.safe.push(playerId);
         this.removePlayerFromCell(playerId, lastIndex);
         console.log(this.safe);
+    }
+
+    getListOfSafePlayers() {
+        return this.safe;
+    }
+
+    getListOfDeadPlayers() {
+        return this.dead;
     }
 
     movePlayerWithCaveCard(playerId, caveCard) {
@@ -147,7 +166,107 @@ class GameMap {
                 }
             }
             this.printGameStatus();
+        } else {
+            console.log(`Players with id: ${playerId} DOES NOT EXIST`);
         }
+    }
+
+    getGemsForSpecificPlayer(playerId) {
+        if (this.gems[playerId] != undefined) {
+            return this.gems[playerId]
+        } else {
+            return 0
+        }
+    }
+
+    calculateNuggets() {
+        console.log(`Safe order is this ${this.safe}`);
+        let ranks = {
+            "first": {
+                "player": null,
+                "gems": 0,
+                "nuggets": 3
+            },
+            "second": {
+                "player": null,
+                "gems": 0,
+                "nuggets": 2
+            },
+            "third": {
+                "player": null,
+                "gems": 0,
+                "nuggets": 1
+            }
+        };
+        this.safe.forEach(plyr => {
+            let g = this.getGemsForSpecificPlayer(plyr);
+            if (g > ranks.first.gems) {
+                ranks.first.gems = g;
+                ranks.first.player = plyr;
+            }
+        });
+        if (ranks.first.player != null) {
+            this.lastRoundWinnerId = ranks.first.player;
+            this.safe.splice(this.safe.indexOf(ranks.first.player), 1);
+        }
+
+        this.safe.forEach(plyr => {
+            let g = this.getGemsForSpecificPlayer(plyr);
+            if (g > ranks.second.gems) {
+                ranks.second.gems = g;
+                ranks.second.player = plyr;
+            }
+        });
+        if (ranks.second.player != null) {
+            this.safe.splice(this.safe.indexOf(ranks.second.player), 1);
+        }
+
+        this.safe.forEach(plyr => {
+            let g = this.getGemsForSpecificPlayer(plyr);
+            if (g > ranks.third.gems) {
+                ranks.third.gems = g;
+                ranks.third.player = plyr;
+            }
+        });
+        if (ranks.third.player != null) {
+            this.safe.splice(this.safe.indexOf(ranks.third.player), 1);
+        }
+
+        for (const [key, value] of Object.entries(ranks)) {
+            console.log(`${key}: ${value}`);
+            if (value.player != null) {
+                if (this.nuggets[value.player] == undefined) {
+                    this.nuggets[value.player] = value.nuggets;
+                } else {
+                    this.nuggets[value.player] = this.nuggets[value.player] + value.nuggets;
+                }
+            }
+        }
+        console.log(this.nuggets);
+        /*
+        const mapSort1 = new Map([...myMap.entries()].sort((a, b) => b[1] - a[1]));
+console.log(mapSort1);
+        */
+    }
+
+    increaseRoundNumber() {
+        this.roundNumber++;
+    }
+
+    setupForNewRound() {
+        this.calculateNuggets();
+        // this.roundNumber++;
+        // console.log(`Round next: ${this.roundNumber} max rounds: ${maxRounds}`);
+        // if (this.roundNumber > maxRounds) {
+        //     console.log("END THE GAME SON ------------");
+        // }
+        this.playerList.forEach(player => {
+            this.setPlayerToStartCell(player);
+        });
+        this.dead = [];
+        this.safe = [];
+        this.gems = {};
+        this.dragonIndex = this.numberOfPlaces;
     }
 }
 

@@ -1,4 +1,5 @@
 const Card = require('./card.js');
+const Utils = require('../../server/js/utils.js');
 
 module.exports = (allGameStateHolder, roomCode) => {
     let countForId = 0;
@@ -13,11 +14,13 @@ module.exports = (allGameStateHolder, roomCode) => {
                 console.log("OPTION 1");
                 allGameStateHolder[roomCode]["private"]["gameMap"].moveAllPlayers(-1);
             },
+            "everyone-one",
             "Move yourself TWO spaces out",
-            () => {
+            (player) => {
                 console.log("OPTION 2");
-                allGameStateHolder[roomCode]["private"]["gameMap"].movePlayerByAmount(-2);
-            }
+                allGameStateHolder[roomCode]["private"]["gameMap"].movePlayerByAmount(player, -2);
+            },
+            "self-two"
         )
     )
     countForId++;
@@ -32,15 +35,38 @@ module.exports = (allGameStateHolder, roomCode) => {
                 console.log("OPTION 1");
                 allGameStateHolder[roomCode]["private"]["gameMap"].moveAllPlayers(-1);
             },
+            "switch",
             "Move yourself TWO spaces out",
-            () => {
+            (player) => {
                 console.log("OPTION 2");
-                allGameStateHolder[roomCode]["private"]["gameMap"].movePlayerByAmount(-2);
-            }
+                allGameStateHolder[roomCode]["private"]["gameMap"].movePlayerByAmount(player, -2);
+            },
+            "self-two"
         )
     )
     countForId++;
 
+    for (let i = 0; i < 3; i++) {
+        exitCardsDeck.push(
+            new Card.ExitCard(
+                "One",
+                "one",
+                countForId,
+                "Move out of the cave by one",
+                (player) => {
+                    console.log("OPTION 1");
+                    allGameStateHolder[roomCode]["private"]["gameMap"].movePlayerByAmount(player, -1);
+                },
+                "self-one",
+                null,
+                null,
+                null
+            )
+        )
+        countForId++;
+    }
+
+    exitCardsDeck = Utils.shuffleArray(exitCardsDeck);
     return exitCardsDeck;
     /*
     1x all OR two

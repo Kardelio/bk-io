@@ -145,9 +145,11 @@ module.exports = function(app, io, getPlayerUsingId) {
                         return `${line.email} - ${line.verified} - ${line.username}`
                     });
                     let roomMap = io.sockets.adapter.rooms;
+                    console.log(io.sockets.adapter.rooms);
                     let out = [];
                     let onlineList = [];
                     for (const [key, value] of roomMap.entries()) {
+                        console.log(`${key} - ${value}`);
                         let userNames = [];
                         value.forEach(element => {
                             userNames.push(getPlayerUsingId(element));

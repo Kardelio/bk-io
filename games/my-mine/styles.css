@@ -2,3 +2,202 @@
     padding: 8px;
     background-color: aqua;
 }
+
+.my-mine-choice-popup {
+    position: absolute;
+    background: white;
+    padding: 1em;
+    font-size: 150%;
+    border-radius: 5px;
+    box-shadow: 1px 1px 4px;
+}
+
+.my-mine-choice-popup-inner {}
+
+.my-mine-log-line {
+    display: flex;
+}
+
+.my-mine-log-player-name {
+    display: inline-block;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 10em;
+}
+
+#my-mine-log-container {
+    height: 15em;
+    overflow: scroll;
+    margin: 0.5em;
+    background: white;
+    padding: 0.5em;
+}
+
+.my-mine-cave-section {
+    display: flex;
+    gap: 0.2em;
+}
+
+.my-mine-dead-section {
+    display: flex;
+    /* gap: 0.5em; */
+    width: 10em;
+    height: 10em;
+    background-image: url(/my-mine/media/dead.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    justify-content: center;
+    align-items: center;
+}
+
+.my-mine-exit-section {
+    display: flex;
+    /* gap: 0.5em; */
+    width: 10em;
+    height: 10em;
+    background-image: url(/my-mine/media/exit.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    justify-content: center;
+    align-items: center;
+}
+
+.my-mine-cave-section-inner {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: 10em;
+    height: 10em;
+    background-image: url(/my-mine/media/cave-section.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    justify-content: center;
+    align-items: center;
+}
+
+.my-mine-cave-section-img {
+    width: 10em;
+    height: 10em;
+}
+
+.my-mine-player-name {
+    background: black;
+    color: white;
+    border-radius: 5px;
+    padding: 0.2em 0.6em;
+    font-size: 120%;
+    font-weight: bold;
+    border: 2px solid white;
+    box-shadow: 3px 3px 6px black;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 50%;
+}
+
+.my-mine-player-dead-state {
+    background: rgba(0, 0, 0, 0.2);
+    color: rgba(255, 255, 255, 0.6);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.my-mine-player-safe-state {
+    background: rgba(0, 0, 0, 0.2);
+    color: rgba(255, 255, 255, 0.6);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.my-mine-card {
+    margin: 0.5em;
+    padding: 0.5em;
+    background: white;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.my-mine-option-card {
+    margin: 0.2em;
+    padding: 0.2em;
+    background: white;
+    border: 2px solid black;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.my-mine-top-card {
+    opacity: 0.5;
+}
+
+.my-mine-top-card-active {
+    box-shadow: 1px 2px 2px black;
+}
+
+.my-mine-top-card-active:hover {
+    background-color: #d1d1d1;
+}
+
+.my-mine-dragon {
+    background-image: url(/my-mine/media/dragon.png);
+    width: 8em;
+    height: 8em;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.my-mine-gem {
+    width: 50px;
+}
+
+.my-mine-gem-line {
+    background: white;
+    padding: 0.2em 0.5em;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    margin: 0.2em 0em;
+}
+
+.my-mine-gem-line-name {
+    font-weight: bold;
+    font-size: 120%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 10em;
+}
+
+.my-mine-arrow-closer {
+    width: 60px;
+}
+
+.my-mine-arrow-out {
+    width: 60px;
+    transform: rotate( 180deg);
+}
+
+#my-mine-stat-container {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+}
+
+
+/*
+background: black;
+    color: white;
+    border-radius: 5px;
+    padding: 0.2em 0.6em;
+    font-size: 120%;
+    font-weight: bold;
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-shadow: 1px 1px 1px;
+*/
